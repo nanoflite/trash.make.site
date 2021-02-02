@@ -12,7 +12,7 @@ destination = 'build'
 
 # TODO
 # ----
-# - copy images
+# - v copy images
 # - copy files (general)
 # - about.md
 # - header / footer
@@ -56,13 +56,13 @@ class Post:
         f = open(source + '/header.html')
         header = f.read()
         f.close()
-        header = header + "<h1>" + self.title + "</h1>\n"
+        header = header + "<article>\n<header>\n<h1>" + self.title + "</h1>\n<time>" + self.date.isoformat() + "</time>\n"
         return header
 
     def footer(self):
         global source
         f = open(source + '/footer.html')
-        footer = f.read()
+        footer = "</article>\n" + f.read()
         f.close()
         return footer
 
