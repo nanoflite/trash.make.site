@@ -1,5 +1,5 @@
 ---
-title: "6\" infared controlled F18 Hornet"
+title: '6" infared controlled F18 Hornet'
 date: "2007-08-19"
 categories: 
   - "indoor_rc"

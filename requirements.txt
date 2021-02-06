@@ -1,2 +1,5 @@
 markdown
 mistletoe
+mako
+Pillow
+git+https://www.github.com/hbldh/hitherdither
