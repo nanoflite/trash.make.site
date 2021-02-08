@@ -123,11 +123,11 @@ The CBM PET computers have no graphical screen mode, only a monochrome character
 
 There are many ways to use the PETSCII graphical characters to create fancy drawn numbers. I settled upon using some rectangular based shapes to draw the numbers. Using the 10 characters shown below, I used them to create the numbers 0 to 9.
 
-[![](images/Screen-Shot-2014-06-04-at-15.44.07-300x45.png)](https://vandenbran.de/wp-content/uploads/2014/06/Screen-Shot-2014-06-04-at-15.44.07.png)
+![](images/Screen-Shot-2014-06-04-at-15.44.07-300x45.png)
 
 This results in numbers that are 3 characters wide and 5 characters high, as shown below. The screen width of the 4032 is limited to 40 characters, this means we have 10 characters to our disposal to draw a tile, including the grid. The number itself can only be 9 characters wide, so we can also draw a grid. That would limit the amount of digits per tile to 3, too little for representing the number 2048.
 
-\[caption id="attachment\_390" align="aligncenter" width="642"\][![The numbers 0 through 9, drawn using the graphical characters.](images/Screen-Shot-2014-06-04-at-15.40.45.png)](https://vandenbran.de/wp-content/uploads/2014/06/Screen-Shot-2014-06-04-at-15.40.45.png) The numbers 0 through 9, drawn using the graphical characters.\[/caption\]
+\[caption id="attachment\_390" align="aligncenter" width="642"\]![The numbers 0 through 9, drawn using the graphical characters.](images/Screen-Shot-2014-06-04-at-15.40.45.png) The numbers 0 through 9, drawn using the graphical characters.\[/caption\]
 
 Luckily, we can condense the numbers, eliminating the space between them. For doing this, I wrote a routine that merges numbers and glues them next to each other. For doing this, I introduced a data structure where each of the 10 graphical characters is mapped to a binary representation of 4 bits. The 4 bits stand for top, bottom, left and right. If you look at the used characters, they each can touch the top, bottom, right and left side of the space they use. You can look at them as little tubes that have exit points at the different sides of the rectangle they occupy. Merging them is now a simple operation of a bitwise 'OR' function.
 
@@ -135,7 +135,7 @@ Luckily, we can condense the numbers, eliminating the space between them. For do
 
 As an example let us connect the vertical bar '|' and 'T' shaped character. The '|' has exit points at the top and bottom, giving bit pattern '1100'. The 'T' has exit points left, right and bottom, giving bit pattern '0111'. A bitwise 'OR' between both bit patterns gives back pattern '1111'. If we look at the table, this results as the '+' sign.
 
-\[caption id="attachment\_392" align="aligncenter" width="150"\][![The number 8192, printed out in condensed format.](images/Screen-Shot-2014-06-04-at-15.49.26.png)](https://vandenbran.de/wp-content/uploads/2014/06/Screen-Shot-2014-06-04-at-15.49.26.png) The number 8192, printed out in condensed format.\[/caption\]
+\[caption id="attachment\_392" align="aligncenter" width="150"\]![The number 8192, printed out in condensed format.](images/Screen-Shot-2014-06-04-at-15.49.26.png) The number 8192, printed out in condensed format.\[/caption\]
 
 The same technique of merging is also used to draw the grid. I wrote a horizontal and vertical line routine that does not overwrite the underlying lines, but merges them, giving nice crosses at the intersections. Here's the code that shows the heart of the merge routine. The variable s points to a location on screen, i.e. the existing situation. The variable 'data' points to the new character to be merged with the existing one. The routine '_char\_to\_code_' returns the bit pattern as described above for the given character. The routine '_code\_to\_char_' does the opposite, returning the character that corresponds with this bit pattern. When '_char\_to\_code_' encounters a character it does not understand, it will return a value with bit 7 set to one, in that case we do not merge, but just return the given character in '_data_'.
 
@@ -158,7 +158,7 @@ This merging comes at a computing cost, so for the game I draw the condensed nu
 
 At the moment I'm writing this blog post I have version ready for the C64 and CBM PET 4032. [The code is available on github](https://github.com/nanoflite/2048-cc65), so you can a look on how it is all made. A compiled version is available as well. You do not need a real CBM PET 4032 to test it if you want. An excellent option is to use the [VICE emulator _xpet_](http://vice-emu.sourceforge.net/) for this.
 
-\[caption id="attachment\_400" align="aligncenter" width="150"\][![Download 2048.](images/Screen-Shot-2014-06-04-at-16.45.22-150x150.png)](https://s3-eu-west-1.amazonaws.com/vandenbran.de/2048/cbm_pet/2048.prg) You can download the game here.\[/caption\]
+\[caption id="attachment\_400" align="aligncenter" width="150"\]![Download 2048.](images/Screen-Shot-2014-06-04-at-16.45.22-150x150.png) (https://s3-eu-west-1.amazonaws.com/vandenbran.de/2048/cbm_pet/2048.prg) You can download the game here.\[/caption\]
 
 Below is a movie of the game in action on a real PET 4032... enjoy the green.
 

@@ -8,7 +8,7 @@ import os.path
 from shutil import copytree, rmtree
 from mako.lookup import TemplateLookup
 import os
-
+from fixcaption import FixCaptionExtension
 
 source = 'source'
 destination = 'build'
@@ -65,7 +65,8 @@ class Post:
                 lines.pop(0)
             lines.pop(0)
         raw = ''.join(lines)
-        return mistletoe.markdown(raw)
+        md = markdown.Markdown(extensions=[FixCaptionExtension()])
+        return md.convert(raw)
 
     def write_html(self):
         template = lookup.get_template('post.html')

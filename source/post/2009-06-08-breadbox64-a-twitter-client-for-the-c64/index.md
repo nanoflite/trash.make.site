@@ -54,6 +54,6 @@ If you fancy this piece of software, you can follow [breadbox64](http://twitter.
 
 # Download
 
-\[caption id="attachment\_293" align="aligncenter" width="128"\][![Download BREADBOX64](images/bb64.jpg "BREADBOX64 disk image")](https://dl.dropboxusercontent.com/u/24183/retro/c64/breadbox64.d64) Download BREADBOX64\[/caption\]
+\[caption id="attachment\_293" align="aligncenter" width="128"\]![Download BREADBOX64](images/bb64.jpg "BREADBOX64 disk image") Download BREADBOX64\[/caption\]
 
 [breadbox64 source code](http://www.vandenbrande.com/wp/wp-content/uploads/2009/06/breadbox64_src.tgz)
