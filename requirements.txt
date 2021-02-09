@@ -1,6 +1,7 @@
-markdown
-mistletoe
-mako
-Pillow
-git+https://www.github.com/hbldh/hitherdither
-pyyaml
+markdown~=3.3.3
+mistletoe~=0.7.2
+mako~=1.1.4
+Pillow~=8.1.0
+git+https://github.com/hbldh/hitherdither
+pyyaml~=5.4.1
+git+https://github.com/pygments/pygments

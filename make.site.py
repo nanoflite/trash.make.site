@@ -69,7 +69,7 @@ class Post:
                 lines.pop(0)
             lines.pop(0)
         raw = ''.join(lines)
-        md = markdown.Markdown(extensions=[FixCaptionExtension()])
+        md = markdown.Markdown(extensions=['codehilite', FixCaptionExtension()])
         return md.convert(raw)
 
     def description_html(self):

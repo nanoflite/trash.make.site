@@ -72,21 +72,20 @@ Another thing I did was to use two different UART's on the XMega for the video d
 
 Because I'm using a separate keyboard driver, there are some IO pins freed up. That allowed me to add a LED, a piezo speaker and a classic joystick. There are some nice things you can do with these. The LED is controlled by an IO pin, so by providing a BASIC statement to control the LED, I was able to write a primitive LED fade routine in BASIC.
 
-```
-100 FOR S=1 TO 20
-110 LED(0)
-120 SLEEP(S)
-130 LED(1)
-140 SLEEP(20-S)
-150 NEXT S
-160 FOR S=1 TO 20
-170 LED(0)
-180 SLEEP(20-S)
-190 LED(1)
-200 SLEEP(S)
-210 NEXT S
-220 GOTO 100
-```
+    :::basic
+    100 FOR S=1 TO 20
+    110 LED(0)
+    120 SLEEP(S)
+    130 LED(1)
+    140 SLEEP(20-S)
+    150 NEXT S
+    160 FOR S=1 TO 20
+    170 LED(0)
+    180 SLEEP(20-S)
+    190 LED(1)
+    200 SLEEP(S)
+    210 NEXT S
+    220 GOTO 100
 
 The extra IO pins also allowed me to connect a joystick to the XMega. I used a classic digital joystick from the 80's and 90's with a SUBD9 connector.
 
