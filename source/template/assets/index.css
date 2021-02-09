@@ -15,15 +15,18 @@ body {
 .column {
     max-width: 80ch;
     word-wrap: break-word;
+    margin-top: 0;
     margin-right: 2ch;
 }
 
 .cover-img {
-    mix-blend-mode: hard-light;
+    /* mix-blend-mode: hard-light; */
 }
 
 .cover {
-    background-color: #2e7bcc;
+    /* background-color: #2e7bcc; */
+    margin: 0;
+    padding: 0;
 }
 
 article > * {
@@ -55,6 +58,18 @@ header li {
 header li a {
   text-align: center;
   padding: 0.25em;
+}
+
+header h1 {
+  font-size: 200%;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+header p {
+    margin-top: 0;
+    padding-top: 0;
+    margin-left: 1ch;
 }
 
 header li h2 {
