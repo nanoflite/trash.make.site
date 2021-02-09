@@ -9,6 +9,9 @@ from shutil import copytree, rmtree
 from mako.lookup import TemplateLookup
 import os
 from fixcaption import FixCaptionExtension
+from extractfirstparagraph import ExtractFirstParagraphExtension
+import yaml
+from collections import namedtuple
 
 source = 'source'
 destination = 'build'
@@ -36,6 +39,7 @@ class Post:
     categories: []
     folder: str
     html: str
+    description: str
 
     def show(self):
         print('post:: ' + self.slug)
@@ -68,6 +72,10 @@ class Post:
         md = markdown.Markdown(extensions=[FixCaptionExtension()])
         return md.convert(raw)
 
+    def description_html(self):
+        md = markdown.Markdown(extensions=[FixCaptionExtension()])
+        return md.convert(self.description)
+
     def write_html(self):
         template = lookup.get_template('post.html')
         self.html = self.render_html()
@@ -97,15 +105,18 @@ class Post:
         f = open(folder + '/index.md', 'r')
         raw = f.read()
         f.close()
-        md = markdown.Markdown(extensions=['meta'])
+        print(folder)
+        md = markdown.Markdown(extensions=['meta', ExtractFirstParagraphExtension()])
         md.convert(raw)
 
         meta = md.Meta
+        first = md.FirstParagraph
+
         title = meta['title'][0][1:-1] if 'title' in meta else ''
         coverImage = meta['coverImage'][0] if 'coverImage' in meta else ''
         categories = meta['categories'][0] if 'categories' in meta else []
 
-        return Post(raw, slug, title, post_date, coverImage, categories, folder, '')
+        return Post(raw, slug, title, post_date, coverImage, categories, folder, '', first)
 
 def copy_assets():
     copytree(source + '/template/assets', destination + '/assets')
@@ -137,6 +148,19 @@ def make_posts(posts):
     for post in posts:
         post.render()
 
+def make_rss(posts):
+    y = open(source + '/meta.yml')
+    meta = yaml.full_load(y)
+    pubdate = date.today().isoformat()
+    meta['lastbuild'] = pubdate
+    meta['pubdate'] = pubdate
+    meta_named = namedtuple('meta', meta.keys())(*meta.values())
+    y.close()
+    template = lookup.get_template('index.xml')
+    f = open(destination + '/index.xml', 'w')
+    f.write(template.render(meta=meta_named, posts=posts))
+    f.close()
+
 def make_site():
     clean_destination()
     copy_assets()
@@ -144,6 +168,7 @@ def make_site():
     posts = read_posts()
     make_index(posts)
     make_posts(posts)
+    make_rss(posts)
 
 if __name__ == '__main__':
     make_site()

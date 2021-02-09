@@ -27,5 +27,7 @@ class FixCaption(Preprocessor):
         return out
 
 class FixCaptionExtension(Extension):
+
     def extendMarkdown(self, md):
+        md.registerExtension(self)
         md.preprocessors.register(FixCaption(md), 'fixcaption', 100)
