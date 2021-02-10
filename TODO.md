@@ -3,13 +3,17 @@
   * [x] Generate RSS
   * [x] Format code
   * [ ] Dither images
-  * [ ] Cover image per article
+  * [x] Cover image per article
+  * [x] Support site icon 
   * [ ] About page
-  * [ ] Pretty print the generated HTML  
+  * [ ] Pretty print the generated HTML 
+  * [ ] Add og: fields from meta data  
   * [ ] Check each article
   * [ ] Write a new one to motivate site change
-  * [ ] Generate finger data from site
-  * [ ] Generate gopher site
-  * [ ] Generate gemini site
+  * [ ] Generate www site (build/www)  
+  * [ ] Generate finger data from site (build/finger)
+  * [ ] Generate gopher site (build/gopher)
+  * [ ] Generate gemini site (build/gemini)
   * [ ] Auto deploy on push via github
+  * [ ] Use a Makefile to automate stuff
   
