@@ -16,4 +16,5 @@
   * [ ] Generate gemini site (build/gemini)
   * [ ] Auto deploy on push via github
   * [ ] Use a Makefile to automate stuff
+  * [ ] Find dominant color in image and use that as color.
   
