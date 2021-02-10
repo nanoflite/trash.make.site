@@ -13,6 +13,7 @@ from extractfirstparagraph import ExtractFirstParagraphExtension
 import yaml
 from collections import namedtuple
 from dither import dither
+from ditherimages import DitherImagesExtension
 
 source = 'source'
 destination = 'build'
@@ -70,7 +71,7 @@ class Post:
                 lines.pop(0)
             lines.pop(0)
         raw = ''.join(lines)
-        md = markdown.Markdown(extensions=['codehilite', FixCaptionExtension()])
+        md = markdown.Markdown(extensions=['codehilite', FixCaptionExtension(), DitherImagesExtension(source=self.folder, destination=self.dest_folder())])
         return md.convert(raw)
 
     def description_html(self):
@@ -104,7 +105,6 @@ class Post:
         self.write_html()
 
     def cover(self):
-        print('KAK', self.coverImage)
         if self.coverImage != None:
             self.dither_cover()
             return 'images/cover.png'
@@ -119,7 +119,6 @@ class Post:
         f = open(folder + '/index.md', 'r')
         raw = f.read()
         f.close()
-        print(folder)
         md = markdown.Markdown(extensions=['meta', ExtractFirstParagraphExtension()])
         md.convert(raw)
 

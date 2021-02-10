@@ -2,7 +2,7 @@
 
   * [x] Generate RSS
   * [x] Format code
-  * [ ] Dither images
+  * [x] Dither images
   * [x] Cover image per article
   * [x] Support site icon 
   * [ ] About page
