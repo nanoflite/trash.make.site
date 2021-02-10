@@ -12,6 +12,7 @@ from fixcaption import FixCaptionExtension
 from extractfirstparagraph import ExtractFirstParagraphExtension
 import yaml
 from collections import namedtuple
+from dither import dither
 
 source = 'source'
 destination = 'build'
@@ -92,10 +93,23 @@ class Post:
         if os.path.exists(self.folder + '/images'):
             copytree(self.folder + '/images', self.dest_folder() + '/images')
 
+    def dither_cover(self):
+        dst = self.dest_folder() + '/images/' + 'cover.png'
+        src = self.folder + '/images/' + self.coverImage
+        dither(src, dst, (480, 480))
+
     def render(self):
         self.create_dest_folder()
         self.copy_images()
         self.write_html()
+
+    def cover(self):
+        print('KAK', self.coverImage)
+        if self.coverImage != None:
+            self.dither_cover()
+            return 'images/cover.png'
+        else:
+            return '/images/cover.png'
 
     @staticmethod
     def create(folder):
@@ -113,7 +127,7 @@ class Post:
         first = md.FirstParagraph
 
         title = meta['title'][0][1:-1] if 'title' in meta else ''
-        coverImage = meta['coverImage'][0] if 'coverImage' in meta else ''
+        coverImage = meta['coverimage'][0][1:-1] if 'coverimage' in meta else None
         categories = meta['categories'][0] if 'categories' in meta else []
 
         return Post(raw, slug, title, post_date, coverImage, categories, folder, '', first)
@@ -122,7 +136,13 @@ def copy_assets():
     copytree(source + '/template/assets', destination + '/assets')
 
 def copy_images():
+    # We need to 'dither' all images... except maybe a few? Put the no dither ones in  no_dither folder.
     copytree(source + '/images', destination + '/images')
+
+def cover_image():
+    src = source + '/images/coverImage.jpg'
+    dst = destination + '/images/cover.png'
+    dither(src, dst, (480, 480))
 
 def make_index(posts):
     template = lookup.get_template('index.html')
@@ -165,6 +185,7 @@ def make_site():
     clean_destination()
     copy_assets()
     copy_images()
+    cover_image()
     posts = read_posts()
     make_index(posts)
     make_posts(posts)
