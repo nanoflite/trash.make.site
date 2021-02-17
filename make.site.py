@@ -14,6 +14,8 @@ import yaml
 from collections import namedtuple
 from dither import dither
 from ditherimages import DitherImagesExtension
+from html5print import HTMLBeautifier
+import lxml.etree as etree
 
 source = 'source'
 destination = 'build'
@@ -76,13 +78,16 @@ class Post:
 
     def description_html(self):
         md = markdown.Markdown(extensions=[FixCaptionExtension()])
-        return md.convert(self.description)
+        html = md.convert(self.description)
+        m = re.search("<p>(.*)</p>", html)
+        return m.group(1)
 
-    def write_html(self):
+    def write_html(self, meta):
         template = lookup.get_template('post.html')
         self.html = self.render_html()
+        html = template.render(meta=meta, post=self)
         f = open(self.dest_folder() + '/index.html', 'w')
-        f.write(template.render(post=self))
+        f.write(HTMLBeautifier.beautify(html, 4))
         f.close()
 
     def create_dest_folder(self):
@@ -99,10 +104,10 @@ class Post:
         src = self.folder + '/images/' + self.coverImage
         dither(src, dst, (480, 480))
 
-    def render(self):
+    def render(self, meta):
         self.create_dest_folder()
         self.copy_images()
-        self.write_html()
+        self.write_html(meta)
 
     def cover(self):
         if self.coverImage != None:
@@ -144,9 +149,10 @@ def cover_image():
     dither(src, dst, (480, 480))
 
 def make_index(posts):
+    meta = load_meta()
     template = lookup.get_template('index.html')
     f = open(destination + '/index.html', 'w')
-    f.write(template.render(posts=posts))
+    f.write(template.render(meta=meta, posts=posts))
     f.close()
 
 def read_posts():
@@ -164,10 +170,11 @@ def clean_destination():
         os.mkdir(destination)
 
 def make_posts(posts):
+    meta = load_meta()
     for post in posts:
-        post.render()
+        post.render(meta)
 
-def make_rss(posts):
+def load_meta():
     y = open(source + '/meta.yml')
     meta = yaml.full_load(y)
     pubdate = date.today().isoformat()
@@ -175,9 +182,17 @@ def make_rss(posts):
     meta['pubdate'] = pubdate
     meta_named = namedtuple('meta', meta.keys())(*meta.values())
     y.close()
+    return meta_named
+
+def make_rss(posts):
+    meta = load_meta()
     template = lookup.get_template('index.xml')
-    f = open(destination + '/index.xml', 'w')
-    f.write(template.render(meta=meta_named, posts=posts))
+    xml_string = template.render(meta=meta, posts=posts).encode('utf-8')
+    parser = etree.XMLParser(recover=True, encoding='utf-8')
+    tree = etree.fromstring(xml_string, parser)
+    xml = etree.tostring(tree, pretty_print=True)
+    f = open(destination + '/index.xml', 'wb')
+    f.write(xml)
     f.close()
 
 def make_site():

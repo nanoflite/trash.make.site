@@ -5,3 +5,8 @@ Pillow~=8.1.0
 git+https://github.com/hbldh/hitherdither
 pyyaml~=5.4.1
 git+https://github.com/pygments/pygments
+html5print
+lxml
+numpy
+scipy
+sklearn
