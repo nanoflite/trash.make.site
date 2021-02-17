@@ -5,9 +5,12 @@
   * [x] Dither images
   * [x] Cover image per article
   * [x] Support site icon 
-  * [ ] About page
   * [x] Pretty print the generated HTML 
   * [x] Add og: fields from meta data  
+  * [x] Find dominant color in image and use that as color
+  * [ ] Override post cover image color in post meta
+  * [ ] \_\_\_nodither\_\_\_ in image filename disables dithering and takes image as-is.  
+  * [ ] About page
   * [ ] Check each article
   * [ ] Write a new one to motivate site change
   * [ ] Generate www site (build/www)  
@@ -16,7 +19,6 @@
   * [ ] Generate gemini site (build/gemini)
   * [ ] Auto deploy on push via github
   * [ ] Use a Makefile to automate stuff
-  * [ ] Find dominant color in image and use that as color
   * [ ] Find youtube thumbnails for an [embed] tag
 
   

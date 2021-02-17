@@ -172,6 +172,15 @@ def read_posts():
     posts.reverse()
     return posts
 
+def read_pages():
+    pages = []
+    for page_folder in glob.glob(source+'/page/*'):
+        page = Page.create(page_folder)
+        pages.append(page)
+    pages.sort(key=lambda post: post.date)
+    pages.reverse()
+    return pages
+
 def clean_destination():
     if os.path.exists(destination):
         rmtree(destination)
@@ -209,8 +218,10 @@ def make_site():
     copy_images()
     cover_image()
     posts = read_posts()
-    make_index(posts)
+    pages = read_pages()
+    make_index(posts, pages)
     make_posts(posts)
+    make_pages()
     make_rss(posts)
 
 if __name__ == '__main__':
