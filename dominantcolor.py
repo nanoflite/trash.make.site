@@ -2,6 +2,7 @@ import scipy.cluster
 import sklearn.cluster
 import numpy
 from PIL import Image
+import binascii
 
 def dominant_colors(filename):
     image = Image.open(filename)
@@ -26,3 +27,6 @@ def dominant_colors(filename):
     for index in numpy.argsort(counts)[::-1]:
         colors.append(tuple([int(code) for code in codes[index]]))
     return colors
+
+def hexcolor(color):
+    return binascii.hexlify(bytearray(int(c) for c in color)).decode('ascii')

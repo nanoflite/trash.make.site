@@ -19,15 +19,27 @@ body {
     margin-right: 2ch;
 }
 
-.cover-img {
-    /* mix-blend-mode: hard-light; */
-}
-
 .cover {
-    /* background-color: #2e7bcc; */
     margin: 0;
     padding: 0;
 }
+
+.cover-img {
+    mix-blend-mode: hard-light;
+}
+
+div.dithered {
+    text-align: center;
+}
+
+p.dithered {
+    display: inline-flex;
+}
+
+p.dithered img {
+    mix-blend-mode: hard-light;
+}
+
 
 article > * {
   margin: 0 0 2ch;

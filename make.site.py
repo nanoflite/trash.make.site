@@ -14,8 +14,10 @@ import yaml
 from collections import namedtuple
 from dither import dither
 from ditherimages import DitherImagesExtension
+from adddominantcolor import AddDominantColorProcessorExtension
 from html5print import HTMLBeautifier
 import lxml.etree as etree
+from dominantcolor import (dominant_colors, hexcolor)
 
 source = 'source'
 destination = 'build'
@@ -73,7 +75,7 @@ class Post:
                 lines.pop(0)
             lines.pop(0)
         raw = ''.join(lines)
-        md = markdown.Markdown(extensions=['codehilite', FixCaptionExtension(), DitherImagesExtension(source=self.folder, destination=self.dest_folder())])
+        md = markdown.Markdown(extensions=['attr_list', 'codehilite', FixCaptionExtension(), DitherImagesExtension(source=self.folder, destination=self.dest_folder()), AddDominantColorProcessorExtension()])
         return md.convert(raw)
 
     def description_html(self):
@@ -82,10 +84,10 @@ class Post:
         m = re.search("<p>(.*)</p>", html)
         return m.group(1)
 
-    def write_html(self, meta):
+    def write_html(self, meta, cover):
         template = lookup.get_template('post.html')
         self.html = self.render_html()
-        html = template.render(meta=meta, post=self)
+        html = template.render(meta=meta, cover=cover, post=self)
         f = open(self.dest_folder() + '/index.html', 'w')
         f.write(HTMLBeautifier.beautify(html, 4))
         f.close()
@@ -103,18 +105,24 @@ class Post:
         dst = self.dest_folder() + '/images/' + 'cover.png'
         src = self.folder + '/images/' + self.coverImage
         dither(src, dst, (480, 480))
+        return hexcolor(dominant_colors(src)[0])
 
     def render(self, meta):
         self.create_dest_folder()
         self.copy_images()
-        self.write_html(meta)
+        img, color = self.cover_image()
+        cover_d = {}
+        cover_d['image'] = img
+        cover_d['color'] = '#'+color
+        cover = namedtuple('cover', cover_d.keys())(*cover_d.values())
+        self.write_html(meta, cover)
 
-    def cover(self):
+    def cover_image(self):
         if self.coverImage != None:
-            self.dither_cover()
-            return 'images/cover.png'
+            color = self.dither_cover()
+            return ('images/cover.png', color)
         else:
-            return '/images/cover.png'
+            return ('/images/cover.png', '2e7bcc')
 
     @staticmethod
     def create(folder):

@@ -2,10 +2,9 @@ from markdown.preprocessors import Preprocessor
 from markdown.extensions import Extension
 import re
 from dither import dither
-from dominantcolor import dominant_colors
+from dominantcolor import (dominant_colors, hexcolor)
 from pathlib import Path
 import os
-import binascii
 
 class DitherImages(Preprocessor):
     """![blah](img.jpg) --> ![blah](img_dithered.png)"""
@@ -33,9 +32,10 @@ class DitherImages(Preprocessor):
                     dither(src, dst, (640, 640))
                     colors = dominant_colors(src)
                     if colors != None:
-                        colour = binascii.hexlify(bytearray(int(c) for c in colors[0])).decode('ascii')
-                        print(colour)
-                    new_match = match.replace(image, new_image) + '{: .dither_image  }'
+                        colour = hexcolor(colors[0])
+                    else:
+                        colour = 'ffffff'
+                    new_match = match.replace(image, new_image) + '{: colour="' + colour + '"  }'
                     new_line = line.replace(match, new_match)
                     out.append(new_line)
                 else:
