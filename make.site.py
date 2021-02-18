@@ -86,10 +86,10 @@ class Post:
         m = re.search("<p>(.*)</p>", html)
         return m.group(1)
 
-    def write_html(self, meta, cover):
+    def write_html(self, meta, pages, cover):
         template = lookup.get_template('post.html')
         self.html = self.render_html()
-        html = template.render(meta=meta, cover=cover, post=self)
+        html = template.render(meta=meta, pages=pages, cover=cover, post=self)
         f = open(self.dest_folder() + '/index.html', 'w')
         f.write(HTMLBeautifier.beautify(html, 4))
         f.close()
@@ -109,7 +109,7 @@ class Post:
         dither(src, dst, (480, 480))
         return hexcolor(dominant_colors(src)[0])
 
-    def render(self, meta):
+    def render(self, meta, pages):
         self.create_dest_folder()
         self.copy_images()
         img, color = self.cover_image()
@@ -125,7 +125,7 @@ class Post:
         cover_d['blend'] = True if self.blend == 'true' else False
         print(cover_d)
         cover = namedtuple('cover', cover_d.keys())(*cover_d.values())
-        self.write_html(meta, cover)
+        self.write_html(meta, pages, cover)
 
     def cover_image(self):
         if self.coverImage != None:
@@ -199,15 +199,15 @@ def clean_destination():
         rmtree(destination)
         os.mkdir(destination)
 
-def make_posts(posts):
+def make_posts(posts, pages):
     meta = load_meta()
     for post in posts:
-        post.render(meta)
+        post.render(meta, pages)
 
 def make_pages(pages):
     meta = load_meta()
     for page in pages:
-        page.render(meta)
+        page.render(meta, pages)
 
 def load_meta():
     y = open(source + '/meta.yml')
@@ -238,7 +238,7 @@ def make_site():
     posts = read_posts()
     pages = read_pages()
     make_index(posts, pages)
-    make_posts(posts)
+    make_posts(posts, pages)
     make_pages(pages)
     make_rss(posts)
 
