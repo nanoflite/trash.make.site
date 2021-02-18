@@ -24,22 +24,25 @@ class DitherImages(Preprocessor):
             if m:
                 match = m.group(0)
                 image = m.group(1)
-                src = self.source + '/' + image
-                path = Path(image)
-                new_image = str(path.parent) + '/' + str(path.stem) + '_dithered.png'
-                dst = self.destination + '/' + new_image
-                if os.path.isfile(src):
-                    dither(src, dst, (640, 640))
-                    colors = dominant_colors(src)
-                    if colors != None:
-                        colour = hexcolor(colors[0])
-                    else:
-                        colour = 'ffffff'
-                    new_match = match.replace(image, new_image) + '{: colour="' + colour + '"  }'
-                    new_line = line.replace(match, new_match)
-                    out.append(new_line)
-                else:
+                if ':___no_dither___' in image:
                     out.append(line)
+                else:
+                    src = self.source + '/' + image
+                    path = Path(image)
+                    new_image = str(path.parent) + '/' + str(path.stem) + '_dithered.png'
+                    dst = self.destination + '/' + new_image
+                    if os.path.isfile(src):
+                        dither(src, dst, (640, 640))
+                        colors = dominant_colors(src)
+                        if colors != None:
+                            colour = hexcolor(colors[0])
+                        else:
+                            colour = 'ffffff'
+                        new_match = match.replace(image, new_image) + '{: colour="' + colour + '"  }'
+                        new_line = line.replace(match, new_match)
+                        out.append(new_line)
+                    else:
+                        out.append(line)
             else:
                 out.append(line)
         return out

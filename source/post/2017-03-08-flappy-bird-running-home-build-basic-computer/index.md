@@ -133,7 +133,7 @@ For it all to work, I had to split up the program in 2 parts. A loader that firs
 
 You can have a look at [the BASIC listing for Flappy Bird on github](https://github.com/nanoflite/basic-1-flappy-bird). In the README, there is a breakdown of the routines used. For the fun of it, here's a picture of the listing (links to the source of it on github).
 
-\[caption id="attachment\_558" align="aligncenter" width="1252"\]![](images/Screenshot-2017-03-08-09.21.02.png) Basic listing for Flappy Bird.\[/caption\]
+\[caption id="attachment\_558" align="aligncenter" width="1252"\]![](images/Screenshot-2017-03-08-09.21.02:___no_dither___.png) Basic listing for Flappy Bird.\[/caption\]
 
 ### Summary
 

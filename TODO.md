@@ -9,7 +9,7 @@
   * [x] Add og: fields from meta data  
   * [x] Find dominant color in image and use that as color
   * [x] Override post cover image color in post meta
-  * [ ] \_\_\_nodither\_\_\_ in image filename disables dithering and takes image as-is.  
+  * [x] \_\_\_nodither\_\_\_ in image filename disables dithering and takes image as-is.  
   * [x] About page
   * [ ] Check each article
   * [ ] Write a new one to motivate site change
