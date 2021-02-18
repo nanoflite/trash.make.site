@@ -46,6 +46,8 @@ class Post:
     folder: str
     html: str
     description: str
+    color: str
+    blend: str
 
     def show(self):
         print('post:: ' + self.slug)
@@ -113,7 +115,15 @@ class Post:
         img, color = self.cover_image()
         cover_d = {}
         cover_d['image'] = img
-        cover_d['color'] = '#'+color
+        if self.color:
+            cover_d['color'] = self.color
+        else:
+            if color:
+                cover_d['color'] = '#'+color
+            else:
+                cover_d['color'] = meta.color
+        cover_d['blend'] = True if self.blend == 'true' else False
+        print(cover_d)
         cover = namedtuple('cover', cover_d.keys())(*cover_d.values())
         self.write_html(meta, cover)
 
@@ -122,13 +132,12 @@ class Post:
             color = self.dither_cover()
             return ('images/cover.png', color)
         else:
-            return ('/images/cover.png', '2e7bcc')
+            return ('/images/cover.png', None)
 
     @staticmethod
     def create(folder):
-        match = re.match('^(\d\d\d\d-\d\d-\d\d)-(.+)$', folder.split('/')[-1])
-        post_date = date.fromisoformat(match.group(1))
-        slug = match.group(2)
+        match = re.match('^.*-?(.+)$', folder.split('/')[-1])
+        slug = match.group(1)
         f = open(folder + '/index.md', 'r')
         raw = f.read()
         f.close()
@@ -138,11 +147,15 @@ class Post:
         meta = md.Meta
         first = md.FirstParagraph
 
+        post_date = date.fromisoformat(meta['date'][0][1:-1])
+
         title = meta['title'][0][1:-1] if 'title' in meta else ''
         coverImage = meta['coverimage'][0][1:-1] if 'coverimage' in meta else None
         categories = meta['categories'][0] if 'categories' in meta else []
+        color = meta['color'][0][1:-1] if 'color' in meta else None
+        blend = meta['blend'][0][1:-1] if 'blend' in meta else 'true'
 
-        return Post(raw, slug, title, post_date, coverImage, categories, folder, '', first)
+        return Post(raw, slug, title, post_date, coverImage, categories, folder, '', first, color, blend)
 
 def copy_assets():
     copytree(source + '/template/assets', destination + '/assets')
@@ -156,11 +169,11 @@ def cover_image():
     dst = destination + '/images/cover.png'
     dither(src, dst, (480, 480))
 
-def make_index(posts):
+def make_index(posts, pages):
     meta = load_meta()
     template = lookup.get_template('index.html')
     f = open(destination + '/index.html', 'w')
-    f.write(template.render(meta=meta, posts=posts))
+    f.write(template.render(meta=meta, posts=posts, pages=pages))
     f.close()
 
 def read_posts():
@@ -175,9 +188,9 @@ def read_posts():
 def read_pages():
     pages = []
     for page_folder in glob.glob(source+'/page/*'):
-        page = Page.create(page_folder)
+        page = Post.create(page_folder)
         pages.append(page)
-    pages.sort(key=lambda post: post.date)
+    pages.sort(key=lambda page: page.date)
     pages.reverse()
     return pages
 
@@ -190,6 +203,11 @@ def make_posts(posts):
     meta = load_meta()
     for post in posts:
         post.render(meta)
+
+def make_pages(pages):
+    meta = load_meta()
+    for page in pages:
+        page.render(meta)
 
 def load_meta():
     y = open(source + '/meta.yml')
@@ -221,7 +239,7 @@ def make_site():
     pages = read_pages()
     make_index(posts, pages)
     make_posts(posts)
-    make_pages()
+    make_pages(pages)
     make_rss(posts)
 
 if __name__ == '__main__':

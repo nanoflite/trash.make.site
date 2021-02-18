@@ -15,7 +15,11 @@
     <div class="box">
         <div class="column">
             <p class="cover" style="background-color: ${cover.color}">
-                <img src="${cover.image}" class="cover-img">
+                % if cover.blend:
+                    <img src="${cover.image}" class="cover-img">
+                % else:
+                    <img src="${cover.image}" class="cover-img-no-blend">
+                % endif
             </p>
         </div>
         <div class="column">
@@ -23,7 +27,13 @@
                 <nav>
                     <ul>
                         <li><h2><a href="/">Home</a></h2></li>
-                        <li><h2><a href="/about.html">About</a></h2></li>
+                        % for page in pages:
+                        <li>
+                            <h2>
+                                <a href="/${page.relative_link()}">${page.title}</a>
+                            </h2>
+                        </li>
+                        % endfor
                         <li><h2><a href="/index.xml">RSS</a></h2></li>
                     </ul>
                 </nav>

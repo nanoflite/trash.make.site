@@ -28,6 +28,10 @@ body {
     mix-blend-mode: hard-light;
 }
 
+.cover-img-no-blend {
+
+}
+
 div.dithered {
     text-align: center;
 }
