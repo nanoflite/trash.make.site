@@ -13,6 +13,7 @@
   * [x] About page
   * [ ] Check each article
   * [ ] Write a new one to motivate site change
+  * [ ] Only generate changed stuff (time based, compare against marker file, look at .md and images...)  
   * [ ] Generate www site (build/www)  
   * [ ] Generate finger data from site (build/finger)
   * [ ] Generate gopher site (build/gopher)
