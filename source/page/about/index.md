@@ -8,6 +8,7 @@ blend: "false"
 
 Hi! My name is Johan Van den Brande, and I'm a self-employed software engineer from Belgium.
 I'm a product from the early seventies of the previous millennium, happily married and a father of 3 children.
+
 Welcome to my website!
 
 From time to time I make something and write about it, sometimes I don't, sometimes I just write about something.
