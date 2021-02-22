@@ -11,9 +11,10 @@
   * [x] Override post cover image color in post meta
   * [x] \_\_\_nodither\_\_\_ in image filename disables dithering and takes image as-is.  
   * [x] About page
+  * [ ] Flags for image in {: }, e.g. dither:false, blend: false, ... 
+  * [ ] Only generate changed stuff (time based, compare against marker file, look at .md and images...)
   * [ ] Check each article
   * [ ] Write a new one to motivate site change
-  * [ ] Only generate changed stuff (time based, compare against marker file, look at .md and images...)  
   * [ ] Generate www site (build/www)  
   * [ ] Generate finger data from site (build/finger)
   * [ ] Generate gopher site (build/gopher)

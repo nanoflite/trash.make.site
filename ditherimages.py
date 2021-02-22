@@ -6,8 +6,49 @@ from dominantcolor import (dominant_colors, hexcolor)
 from pathlib import Path
 import os
 
+def _handle_double_quote(s, t):
+    k, v = t.split('=', 1)
+    return k, v.strip('"')
+
+
+def _handle_single_quote(s, t):
+    k, v = t.split('=', 1)
+    return k, v.strip("'")
+
+
+def _handle_key_value(s, t):
+    return t.split('=', 1)
+
+
+def _handle_word(s, t):
+    if t.startswith('.'):
+        return '.', t[1:]
+    if t.startswith('#'):
+        return 'id', t[1:]
+    return t, t
+
+
+_scanner = re.Scanner([
+    (r'[^ =]+=".*?"', _handle_double_quote),
+    (r"[^ =]+='.*?'", _handle_single_quote),
+    (r'[^ =]+=[^ =]+', _handle_key_value),
+    (r'[^ =]+', _handle_word),
+    (r' ', None)
+])
+
+ATTR_RE = r'\{\:(.+?)\}'
+
+def get_attrs(str):
+    """ Parse attribute list and return a list of attribute tuples. """
+    am = re.search(ATTR_RE, str)
+    if am:
+        return dict(_scanner.scan(am.group(1))[0])
+    else:
+        return {}
+
 class DitherImages(Preprocessor):
     """![blah](img.jpg) --> ![blah](img_dithered.png)"""
+
 
     def __init__(self, md, config):
         super().__init__(md)
@@ -24,7 +65,9 @@ class DitherImages(Preprocessor):
             if m:
                 match = m.group(0)
                 image = m.group(1)
-                if ':___no_dither___' in image:
+                attrs = get_attrs(line)
+                line = re.sub(ATTR_RE, '', line)
+                if attrs.get('dither') == 'no':
                     out.append(line)
                 else:
                     src = self.source + '/' + image

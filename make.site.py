@@ -2,7 +2,6 @@ import glob
 import re
 from datetime import date
 from dataclasses import dataclass
-import mistletoe
 import markdown
 import os.path
 from shutil import copytree, rmtree
