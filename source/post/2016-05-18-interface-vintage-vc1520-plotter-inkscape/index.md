@@ -1,8 +1,6 @@
 ---
 title: "How to plot Inkscape drawings on a vintage VC1520 plotter."
 date: "2016-05-18"
-categories: 
-  - "vintage_computing"
 coverImage: "IMG_20160518_105028.jpg"
 ---
 
