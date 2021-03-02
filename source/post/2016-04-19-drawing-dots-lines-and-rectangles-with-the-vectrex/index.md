@@ -1,8 +1,6 @@
 ---
 title: "Drawing dots, lines and rectangles with the Vectrex."
 date: "2016-04-19"
-categories: 
-  - "vintage_computing"
 coverImage: "manual01.jpg"
 ---
 
@@ -12,21 +10,22 @@ Last time I talked about setting up a toolchain for Vectrex development using CM
 
 Here's a snippet of code to draw a rectangle using 4 dots.
 
-#include <vectrex/bios.h>
-
-int main()
-{
-  while(1)
-  {
-    wait\_retrace();
-    intensity(0x7f);
-    dot( 50, 0);
-    dot( 0, 50);
-    dot(-50, 0);
-    dot( 0, -50);
-  }
-  return 0;
-}
+    :::C
+    #include <vectrex/bios.h>
+    
+    int main()
+    {
+      while(1)
+      {
+        wait_retrace();
+        intensity(0x7f);
+        dot( 50, 0);
+        dot( 0, 50);
+        dot(-50, 0);
+        dot( 0, -50);
+      }
+      return 0;
+    }
 
 The dot function sets a dot relative to the current location of the beam, which can sound a bit confusing. So let us step back a bit, because if you understand how the Vectrex works, then this will make more sense.
 
@@ -38,35 +37,35 @@ Here's a drawing that explains the relative drawing a bit. The first dot placed 
 
 ![vectrex_relative](images/vectrex_relative.jpg)
 
-The 'wait\_retrace' should become clear as well now. It does some house keeping and moves the beam to the center of the screen.
+The 'wait_retrace' should become clear as well now. It does some house keeping and moves the beam to the center of the screen.
 
 The 'intensity' function sets the intensity of the electron beam, in this case to 0x7f, which is the maximum.
 
 Here's a code snippet that uses the 'dots' function to draw the 4 dots. The 'dots' function allows you to draw a list of dots with one function call.
 
-#include <vectrex/bios.h>
+    :::C
+    #include <vectrex/bios.h>
+    
+    #pragma const_data start
+    char thedots[8] = {
+      50, 0,
+      0, 50,
+      -50, 0,
+      0, -50
+    };
+    #pragma const_data end
+    
+    int main()
+    {
+      while(1)
+      {
+        wait_retrace();
+        intensity(0x7f);
+        dots(4, thedots);
+      }
+      return 0;
+    }
 
-#pragma const\_data start
-char thedots\[8\] = {
-  50, 0,
-  0, 50,
-  -50, 0,
-  0, -50
-};
-#pragma const\_data end
-
-int main()
-{
-  while(1)
-  {
-    wait\_retrace();
-    intensity(0x7f);
-    dots(4, thedots);
-  }
-  return 0;
-}
-
- 
 
 The 'pragma' tells the compiler that the data is of the type constant data. As it is data that only needs to be read, it can be placed in ROM and does not need to be loaded into RAM. That is a nice feature, because RAM is sparse on the Vextrex with 1K also because that 1K is used a lot by the BIOS routines.
 
@@ -74,40 +73,41 @@ Let's automate the build with a Makefile
 
 Building the code above can be done via the command line:
 
-cmoc --vectrex --verbose explore\_1.c
+    :::SHELL
+    $> cmoc --vectrex --verbose explore_1.c
 
 Although that works, it is more convenient to create a Makefile for this. Here's my template for a Vextrex project Makefile.
 
-\## Makefile for cmoc and vectrex
+## Makefile for cmoc and vectrex
 
-NAME = dots
+    :::Makefile
+    NAME = dots
+    
+    TARGET = $(NAME).bin
+    SOURCE = $(NAME).c
+    
+    CC = cmoc
+    CFLAGS = --vectrex --verbose
+    
+    VX = vecx
+    
+    all: $(TARGET)
+    
+    $(TARGET): $(SOURCE)
+    @ echo "CC $<"
+    @ $(CC) $(CFLAGS) $<
+    
+    run: $(TARGET)
+    @ $(VX) $<
+    
+    clean:
+    @ echo $@
+    @ rm -f $(NAME).{bin,i,lst,asm,hex}
+    
+    # (/)
+    # ( ..)
+    # C(")(")
 
-TARGET = $(NAME).bin
-SOURCE = $(NAME).c
-
-CC = cmoc
-CFLAGS = --vectrex --verbose
-
-VX = vecx
-
-all: $(TARGET)
-
-$(TARGET): $(SOURCE)
-@ echo "CC $<"
-@ $(CC) $(CFLAGS) $<
-
-run: $(TARGET)
-@ $(VX) $<
-
-clean:
-@ echo $@
-@ rm -f $(NAME).{bin,i,lst,asm,hex}
-
-# (\\/)
-# ( ..)
-# C(")(")
-
- 
 
 The only thing that should change is the NAME of the program. As CMOC can't work with multiple compilation targets, it only supports one object file, this is basically all you need.
 
@@ -117,59 +117,62 @@ There is an extra 'run' target, which allows you to run the app in an emulator a
 
 Let's first draw a rectangle using 4 lines.
 
-#include <vectrex/bios.h>
-
-int main()
-{
-  while(1)
-  {
-    wait\_retrace();
-    intensity(0x7f);
-    move(0,0);
-    line( 50,   0);
-    line(  0,  50);
-    line(-50,   0);
-    line(  0, -50);
-  }
-  return 0;
-}
-
- 
-
-First we have to move the beam to the center of the screen, using the 'move' function. But wait, we said the 'wait\_retrace' function does that as well? Yes, that is correct, but the 'wait\_retrace' function leaves the integrators in zero-mode, which means nothing can be drawn. The 'move' function call also enables the integrators, next to moving the beam to the provided location. In the case of the 'dot' function, that was not necessary as this function does a move, followed by switching on the electron beam and wait for short period.
-
-Next, we draw the four lines and again we use relative coordinates for the lines. ![Screenshot 2016-04-19 12.05.01](images/Screenshot-2016-04-19-12.05.01.png) Just as with the 'dot ' and 'dots' function, we have a 'line' and 'lines' function. Here's an example of using the 'lines' function to draw a rectangle.
-
-#include <vectrex/bios.h>
-
-#pragma const\_data start
-char rectangle\[10\] = {
-    // These are relative coordinates.
-    50, 0,
-    0, 50,
-    -50, 0,
-    0, -50
-};
-
-char center\[2\] = {
-    // We also take the middle point of the rectangle which we move to before drawing. 
-    -25, -25
-};
-#pragma const\_data end
-
-int main()
-{
-     while(1)
-     {
-        wait\_retrace();
+    :::C
+    #include <vectrex/bios.h>
+    
+    int main()
+    {
+      while(1)
+      {
+        wait_retrace();
         intensity(0x7f);
-        move(center\[0\], center\[1\]);
-        lines(4, rectangle);
-     }
-     return 0;
-}
+        move(0,0);
+        line( 50,   0);
+        line(  0,  50);
+        line(-50,   0);
+        line(  0, -50);
+      }
+      return 0;
+    }
 
- 
+First we have to move the beam to the center of the screen, using the 'move' function. But wait, we said the 'wait_retrace' function does that as well? Yes, that is correct, but the 'wait_retrace' function leaves the integrators in zero-mode, which means nothing can be drawn. The 'move' function call also enables the integrators, next to moving the beam to the provided location. In the case of the 'dot' function, that was not necessary as this function does a move, followed by switching on the electron beam and wait for short period.
+
+Next, we draw the four lines and again we use relative coordinates for the lines.
+
+![Screenshot 2016-04-19 12.05.01](images/Screenshot-2016-04-19-12.05.01.png){: dither="no" }
+
+Just as with the 'dot ' and 'dots' function, we have a 'line' and 'lines' function. Here's an example of using the 'lines' function to draw a rectangle.
+
+    :::C
+    #include <vectrex/bios.h>
+    
+    #pragma const_data start
+    char rectangle[10] = {
+        // These are relative coordinates.
+        50, 0,
+        0, 50,
+        -50, 0,
+        0, -50
+    };
+    
+    char center[2] = {
+        // We also take the middle point of the rectangle which we move to before drawing. 
+        -25, -25
+    };
+    #pragma const_data end
+    
+    int main()
+    {
+         while(1)
+         {
+            wait_retrace();
+            intensity(0x7f);
+            move(center[0], center[1]);
+            lines(4, rectangle);
+         }
+         return 0;
+    }
+
 
 The lines function takes a list of relative coordinates. What we do here as well is to first move to the center of the rectangle, so that the actually draw of the rectangle is nicely centered on the screen.
 
@@ -177,35 +180,37 @@ The lines function takes a list of relative coordinates. What we do here as well
 
 A ROM cartridge for the Vectrex has a header that contains information about the contents stored on the cartridge. This header information includes title, title music and copyright together with some coordinates as to where to display the title and the font size of the title.
 
-To make these accessible in C, I opted to use pragmas for that: vx\_title, vx\_music, vx\_copyright, vx\_title\_pos, vx\_title\_size.
+To make these accessible in C, I opted to use pragmas for that: vx_title, vx_music, vx_copyright, vx_title_pos, vx_title_size.
 
 For some reason, the Vectrex expects Y as the first coordinate, so we adhere to this convention in the C code as well. A Full Vectrex header definition would look as follows:
 
-#pragma vx\_copyright "2016"
-#pragma vx\_title\_pos 0,-80
-#pragma vx\_title\_size -8, 80
-#pragma vx\_title "g MAGIC GAME"
-#pragma vx\_music vx\_music\_1
+    :::C
+    #pragma vx_copyright "2016"
+    #pragma vx_title_pos 0,-80
+    #pragma vx_title_size -8, 80
+    #pragma vx_title "g MAGIC GAME"
+    #pragma vx_music vx_music_1
 
-The 'g' in the title stands for a copyright sign. The 'vx\_music\_1' points to a location in memory where a song is defined. This one is the standard startup music. It is possible to define your own song, but that is probably for another article as I have not toyed with that yet.
+The 'g' in the title stands for a copyright sign. The 'vx_music_1' points to a location in memory where a song is defined. This one is the standard startup music. It is possible to define your own song, but that is probably for another article as I have not toyed with that yet.
 
 ![Screenshot 2016-04-19 11.57.38](images/Screenshot-2016-04-19-11.57.38.png)
 
 ### Let us show some text
 
-#include <vectrex/bios.h>
+    :::C
+    #include <vectrex/bios.h>
+    
+    int main()
+    {
+      while(1)
+      {
+        wait_retrace();
+        print_str_c( 0x10, -0x50, "HELLO WORLD!" );
+      }
+      return 0;
+    }
 
-int main()
-{
-  while(1)
-  {
-    wait\_retrace();
-    print\_str\_c( 0x10, -0x50, "HELLO WORLD!" );
-  }
-  return 0;
-}
-
-The function 'print\_str\_c' displays a C string at a certain location on the screen. What you see is that the display of the text is wrapped in a while loop. What follows is true for all Vectrex drawing routines, but I think mentioning it is worthwhile. Why do we need to constantly print out the text, or constantly draw all the vectors again, even for a static image? The reason for this is that the Vectrex has no image buffer, vectors are drawn on the go and light up the fosfor on the CRT where the electron beam hits the screen. The fosfor has some afterglow, but quickly the image disappears. So to have the illusion of a steady image, we have to refresh the screen constantly. ![Screenshot 2016-04-19 12.02.03](images/Screenshot-2016-04-19-12.02.03-1.png) The text display on a Vectrex is a bit odd, as the text seems to be a bitmapped font and yes, it actually is. The text is drawn by shifting font data, line-by-line to a shift register. This output of this shift register controls if the beam is on or off. This also means that the Vectrex is capable of showing bitmapped graphics if we do the same trick in our software.
+The function 'print_str_c' displays a C string at a certain location on the screen. What you see is that the display of the text is wrapped in a while loop. What follows is true for all Vectrex drawing routines, but I think mentioning it is worthwhile. Why do we need to constantly print out the text, or constantly draw all the vectors again, even for a static image? The reason for this is that the Vectrex has no image buffer, vectors are drawn on the go and light up the fosfor on the CRT where the electron beam hits the screen. The fosfor has some afterglow, but quickly the image disappears. So to have the illusion of a steady image, we have to refresh the screen constantly. ![Screenshot 2016-04-19 12.02.03](images/Screenshot-2016-04-19-12.02.03-1.png) The text display on a Vectrex is a bit odd, as the text seems to be a bitmapped font and yes, it actually is. The text is drawn by shifting font data, line-by-line to a shift register. This output of this shift register controls if the beam is on or off. This also means that the Vectrex is capable of showing bitmapped graphics if we do the same trick in our software.
 
 ### Show text with vector lines
 
@@ -215,39 +220,40 @@ It is also possible to draw text with lines. We have seen the 'lines' function a
 
 Now let us do something nice with the rectangle. The Vectrex has BIOS functions that help in rotating a vector drawing. How cool is that?
 
-#include <vectrex/bios.h>
-
-#pragma const\_data start
-char rectangle\[10\] = {
-  // These are relative coordinates.
-  50, 0,
-  0, 50,
-  -50, 0,
-  0, -50,
-  // We also take the middle point of the rectangle which we move to before drawing.   
-  -25, -25
-};
-#pragma const\_data end
-
-int main()
-{
-  int8\_t angle = 0;
-  char rotated\[10\];
-  while(1)
-  {
-    wait\_retrace();
-    intensity(0x7f);
-    rotate(angle, 5, rectangle, rotated);
-    move(rotated\[8\], rotated\[9\]);
-    lines(4, rotated);
-    angle++;
-  }
-  return 0;
-}
+    :::C
+    #include <vectrex/bios.h>
+    
+    #pragma const_data start
+    char rectangle[10] = {
+      // These are relative coordinates.
+      50, 0,
+      0, 50,
+      -50, 0,
+      0, -50,
+      // We also take the middle point of the rectangle which we move to before drawing.   
+      -25, -25
+    };
+    #pragma const_data end
+    
+    int main()
+    {
+      int8_t angle = 0;
+      char rotated[10];
+      while(1)
+      {
+        wait_retrace();
+        intensity(0x7f);
+        rotate(angle, 5, rectangle, rotated);
+        move(rotated[8], rotated[9]);
+        lines(4, rotated);
+        angle++;
+      }
+      return 0;
+    }
 
 We store the middle point of the rectangle and rotate that one as well, his allows us to show a rotating rectangle that spins around its center. The call to rotate a vector is surprisingly simple, we just have to provide it with the angle in the range of 0 to 255, the number of points to rotate, the source array and next the destination array. As we can see, the source array can be stored in ROM, but the destination array has to be stored in RAM.
 
-\[embed\]https://youtu.be/XDTfgguy3Xc\[/embed\]
+Here's a [video showing the above rotating rectangle example](https://vimeo.com/518483323).
 
 ### Summary
 

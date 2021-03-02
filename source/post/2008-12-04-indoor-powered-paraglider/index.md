@@ -1,8 +1,6 @@
 ---
 title: "Indoor powered paraglider"
 date: "2008-12-04"
-categories: 
-  - "indoor_rc"
 coverImage: "pc020035.jpg"
 ---
 
@@ -10,15 +8,19 @@ Inspired by some local guys who fly paramotors on quiet evenings I decided to bu
 
 ### Demo movie
 
-The small movie was filmed at our local indoor rc group gathering and filmed with my Nokia 5500 GSM, so do not expect any fancy stuff. However, you see the parasail flying along. Although it steers rather easily, you need to be carefull not to end up in a death spiral. Too much deflection of your stick and the paraglider goes down. For me this proves that paragliding is a risky business!
+[This small movie](https://vimeo.com/516676345) was filmed at our local indoor rc group gathering and filmed with my Nokia 5500 GSM, so do not expect any fancy stuff. However, you see the parasail flying along. Although it steers rather easily, you need to be carefull not to end up in a death spiral. Too much deflection of your stick and the paraglider goes down. For me this proves that paragliding is a risky business!
 
 ### The sail
 
 The sail is made from a light-weight grocery bag and measures 36cm by 12cm. The ribs are made from 2mm depron and have a reflexed airfoil. The airfoil used here is the upper part of the Eppler 184. A total of 10 ribs are placed at 4cm intervals, giving a total span of 36 cm. The reflexed airfoil is choosen for extra longitudenal stability. However, you can argue it is still needed given the very low center of gravity.
 
+![](images/e184.gif){: dither="no" }
+
 The sail is made semi self supporting. It uses ribs to provide the airfoil and a small carbon rod makes sure it does not collapse. At this scale, it will be very hard to make a sail that can sustain its form only by the air captured in pockets.
 
-The lines are made from knitting yarn. The front lines are approximately 40cm long and  the aft ones 43 cm. The angle of attack is approximately set at around 7 to 10 degrees. I should measure it more exactly, but it should be around that number. The angle of attack is rather large, but I had to set it like that because otherwise the paraglider stalls instead of climbs.
+![](images/e184.png){: dither="no" }
+
+The lines are made from knitting yarn. The front lines are approximately 40cm long and the aft ones 43 cm. The angle of attack is approximately set at around 7 to 10 degrees. I should measure it more exactly, but it should be around that number. The angle of attack is rather large, but I had to set it like that because otherwise the paraglider stalls instead of climbs.
 
 ### Controls
 
@@ -36,10 +38,31 @@ The receiver is a MicronInvent minor - one of the best indoor rc receivers aroun
 
 ### Full specs
 
-weight: 13 grams LiPo: 50MAh Receiver: Minor RX span: 36cm chord: 12cm line length: approx. 40cm pilot: recycled robocopter pilot motor: X-Twin prop: X-Twin
+  * Weight: 13 grams
+  * LiPo: 50MAh
+  * Receiver: Minor RX
+  * Wingspan: 36
+    cm
+  * Chord: 12cm
+  * Line length: approx. 40cm
+  * Pilot: recycled robocopter pilot
+  * Motor: X-Twin prop: X-Twin
+
+### Some images
+
+![](images/pc020035.jpg)
+
+![](images/pc020036.jpg)
+
+![](images/pc020040.jpg)
+
+![](images/pc020041.jpg)
+
+![](images/pc020045.jpg)
+
+![](images/pc030046.jpg)
 
 ### Further reading
 
-- [Link to flickr foto shoot](http://www.flickr.com/photos/40476393@N00/tags/paraglider1/show/ "Link to flickr photo shoot")
 - [Another indoor paramotor I discovered](http://www.rcgroups.com/forums/showthread.php?t=763749 "Another indoor paramotor")
 - [MicroInvent RX](http://www.microinvent.com/mambo/index.php)

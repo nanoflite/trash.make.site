@@ -37,6 +37,7 @@ _scanner = re.Scanner([
 ])
 
 ATTR_RE = r'\{\:(.+?)\}'
+IMG_RE = r'\!\[.*?\]\((\S+)\s*.*?\)'
 
 def get_attrs(str):
     """ Parse attribute list and return a list of attribute tuples. """
@@ -61,7 +62,7 @@ class DitherImages(Preprocessor):
     def run(self, lines):
         out = []
         for line in lines:
-            m = re.search("\!\[.*\]\((.*?)\s.*.*\)", line)
+            m = re.search(IMG_RE, line)
             if m:
                 match = m.group(0)
                 image = m.group(1)

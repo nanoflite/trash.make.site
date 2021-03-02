@@ -52,7 +52,7 @@ The first sumo application I wrote for Killerbee is called scanner. Scanner is a
 
 You can have a look at a movie I made in which Killerbee tries to push a small pen-racer car from the sumo ring.
 
-![](images/video.png)
+![](images/video.png "Preview image of video")
 
 [Link to a small video](https://vimeo.com/516676377)
 

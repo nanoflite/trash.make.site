@@ -154,6 +154,8 @@ class Post:
         color = meta['color'][0][1:-1] if 'color' in meta else None
         blend = meta['blend'][0][1:-1] if 'blend' in meta else 'true'
 
+        print("POST: {} ({})".format(title, coverImage))
+
         return Post(raw, slug, title, post_date, coverImage, categories, folder, '', first, color, blend)
 
 def copy_assets():
@@ -172,6 +174,13 @@ def make_index(posts, pages):
     meta = load_meta()
     template = lookup.get_template('index.html')
     f = open(destination + '/index.html', 'w')
+    f.write(template.render(meta=meta, posts=posts, pages=pages))
+    f.close()
+
+def make_404(posts, pages):
+    meta = load_meta()
+    template = lookup.get_template('404.html')
+    f = open(destination + '/404.html', 'w')
     f.write(template.render(meta=meta, posts=posts, pages=pages))
     f.close()
 
@@ -237,6 +246,7 @@ def make_site():
     posts = read_posts()
     pages = read_pages()
     make_index(posts, pages)
+    make_404(posts, pages)
     make_posts(posts, pages)
     make_pages(pages)
     make_rss(posts)

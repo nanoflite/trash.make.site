@@ -14,56 +14,60 @@ This rekindled my interest in doing something with the VC1520. I took the VC1520
 
 Next up was the software for driving the plotter. Luckily, there is OpenCBM, which is an open source driver for the CBM bus ([http://spiro.trikaliotis.net/opencbm](http://spiro.trikaliotis.net/opencbm)). Although theoretically supports all types of devices, most of the tools are geared towards using drives. One of the tools is 'cbmctrl', which is used to send commands to external devices. This was enough to start experimenting with the plotter. Here's an example to plot a 'Hello World' message.
 
-#!/bin/bash
+    :::SHELL
+    #!/bin/bash
+    
+    cbmctrl lock 
+    cbmctrl listen 6 0 
+    cbmctrl put "HELLO WORLD!" 13 
+    cbmctrl unlisten 
+    cbmctrl unlock 
 
-cbmctrl lock 
-cbmctrl listen 6 0 
-cbmctrl put "HELLO WORLD!" 13 
-cbmctrl unlisten 
-cbmctrl unlock 
-
-\[caption id="attachment\_521" align="aligncenter" width="800"\]![HELLO WORLD](images/IMG_20160518_103202.jpg) HELLO WORLD\[/caption\]
+![HELLO WORLD](images/IMG_20160518_103202.jpg)
 
 OpenCBM comes with a shared library, and with some Python and a C-types wrapper around it, I was able to brew up [a driver and a VC1520 module for the plotter](https://github.com/nanoflite/vc1520py). This allowed me to write some cool little programs.
 
-Hello World
+    :::Python
+    # Hello World
+    
+    from VC1520 import VC1520
+    
+    plotter = VC1520(6)
+    plotter.lower\_case(True)
+    plotter.puts("Hello World!")
+    
+    Spirograph
+    
+    import math
+    from VC1520 import VC1520
+    
+    plotter = VC1520(6)
+    
+    L = 30
+    R = 80
+    
+    plotter.reset()
+    plotter.color('blue')
+    plotter.size(2)
+    plotter.write("\\rSPIRO")
+    plotter.move(240, -200)
+    plotter.set\_relative\_origin()
+    
+    plotter.color('green')
+    for J in range(0, 360, 15):
+        for I in range(0, 360, 10):
+            X = R\*math.sin(J\*math.pi/180)+L\*math.sin(I\*math.pi/180)
+            Y = R\*math.cos(J\*math.pi/180)+L\*math.cos(I\*math.pi/180)
+            if I == 0:
+                plotter.move\_relative(X, Y)
+            else:
+                plotter.draw\_relative(X, Y)
+    
+    plotter.move\_relative(0, -100)
 
-from VC1520 import VC1520
+![Spiro](images/IMG_20160518_104704.jpg)
 
-plotter = VC1520(6)
-plotter.lower\_case(True)
-plotter.puts("Hello World!")
-
-Spirograph
-
-import math
-from VC1520 import VC1520
-
-plotter = VC1520(6)
-
-L = 30
-R = 80
-
-plotter.reset()
-plotter.color('blue')
-plotter.size(2)
-plotter.write("\\rSPIRO")
-plotter.move(240, -200)
-plotter.set\_relative\_origin()
-
-plotter.color('green')
-for J in range(0, 360, 15):
-    for I in range(0, 360, 10):
-        X = R\*math.sin(J\*math.pi/180)+L\*math.sin(I\*math.pi/180)
-        Y = R\*math.cos(J\*math.pi/180)+L\*math.cos(I\*math.pi/180)
-        if I == 0:
-            plotter.move\_relative(X, Y)
-        else:
-            plotter.draw\_relative(X, Y)
-
-plotter.move\_relative(0, -100)
-
-\[caption id="attachment\_520" align="aligncenter" width="800"\]![Spiro](images/IMG_20160518_104704.jpg) Spiro\[/caption\]
+Spiro
 
 But this way, you still need to write Python code to get something done. It would be easier if you could just plot some vector images from a drawing program. Now, for some of my Fablab work I use Inkscape, which is a cool open source vector drawing tool with a Python extension API. And now it gets interesting as all parts start to come together. We have a Python library to talk to the VC1520 and a vector drawing application with Python build in!
 
@@ -77,21 +81,29 @@ Next, you need to install the Inkscape extension from [https://github.com/nanofl
 
 After installation you'll find a new entry in the Extensions -> Export, namely VC1520. If you open that extension, you get the following dialog.
 
-\[caption id="attachment\_512" align="aligncenter" width="634"\]![VC1520 extension dialog](images/Screenshot-2016-05-18-11.19.40.png) VC1520 extension dialog\[/caption\]
+![VC1520 extension dialog](images/Screenshot-2016-05-18-11.19.40.png)
+
+VC1520 extension dialog
 
 You can choose the device number (6) and an optional title and its color. If you leave this empty, no title will be plotted. The debug option gives some output about the drawing and a list of the points. If you press 'Apply' the extension opens a new Inkscape window to convert everything to paths and lines and then calculates the lines needed for plotting. You can use color in your drawing, but the color needs to be exactly red (255,0,0), green (0,255,0), blue (0,0,255) or black (0,0,0). Any non-recognized color is converted to black. Now, if all went well, the plotter should start drawing.
 
 Here's an example of a plot I made using the wire sphere tool in Inkscape.
 
-\[caption id="attachment\_518" align="aligncenter" width="563"\]![Wire sphere](images/scan_5.jpg) Wire sphere\[/caption\]
+![Wire sphere](images/scan_5.jpg)
+
+Wire sphere
 
 And here's the wire sphere tool window in Inkscape.
 
-\[caption id="attachment\_519" align="aligncenter" width="524"\]![wire sphere](images/Screenshot-2016-05-18-11.08.24-1.png) wire sphere\[/caption\]
+![wire sphere](images/Screenshot-2016-05-18-11.08.24-1.png)
+
+Wire sphere
 
 Now for some plotting tips. I found this cool tutorial on the Eggbot site to [fill an area with a plotter](http://wiki.evilmadscientist.com/Creating_filled_regions). Here's an example I did, drawing some stars.
 
-\[caption id="attachment\_509" align="aligncenter" width="330"\]![A filled star](images/scan_7.jpg) A filled star\[/caption\]
+![A filled star](images/scan_7.jpg)
+
+A filled star
 
 The plotter area for the VC1520 is 480 by 999 pixels (actually the vertical can go to -999 as well, but I limited this). Drawings are automatically scaled to this area. The extension always plots the longest side in the vertical direction.
 
@@ -99,17 +111,21 @@ Another tip, I adjust the size of the page in Inkscape to the size of my drawing
 
 Here's another example, a chair I tried. However, there is a problem with the conversion to a path, it does look rather cool.
 
-\[caption id="attachment\_516" align="aligncenter" width="449"\]![Plotted armchair.](images/armchair.jpg) Plotted armchair.\[/caption\]
+![Plotted armchair.](images/armchair.jpg)
 
-\[caption id="attachment\_517" align="aligncenter" width="640"\]![Armchair in Inkscape.](images/inkscape.jpg) Armchair in Inkscape.\[/caption\]
+Plotted armchair.
 
-As a last example, here is a short video clip of my printer trying to print an electric drill. The result suffers from the same problem as the chair, but is still rather nice and looking at the plotter drawing the shapes is just mesmerizing.
+![Armchair in Inkscape.](images/inkscape.jpg)
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/FGeG1iB-1Zc" frameborder="0" allowfullscreen></iframe>
+Armchair in Inkscape.
+
+As a last example, [here is a short video clip of my printer trying to print an electric drill](https://vimeo.com/518492648). The result suffers from the same problem as the chair, but is still rather nice and looking at the plotter drawing the shapes is just mesmerizing.
 
 The result...
 
-\[caption id="attachment\_527" align="aligncenter" width="450"\]![electric drill](images/boor.jpg) electric drill\[/caption\]
+![electric drill](images/boor.jpg)
+
+electric drill
 
 Now, if you happen to have a VC1520 and a xum1541, please give it a try and show me your results!
 

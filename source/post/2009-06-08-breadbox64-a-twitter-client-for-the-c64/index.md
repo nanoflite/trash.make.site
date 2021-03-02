@@ -1,12 +1,11 @@
 ---
 title: "BREADBOX64, a twitter client for the C64."
 date: "2009-06-08"
-categories: 
-  - "vintage_computing"
-coverImage: "breadbox64_main.png"
+coverImage: "breadbox64_logo.png"
+color: "#fafafa"
 ---
 
-![breadbox64_logo](images/breadbox64_logo.png "breadbox64_logo")BREADBOX64 is a twitter client for the C64/128 which allows you to tweet from a real C64 and show your friends timeline. It uses Contiki, a very nice embedded OS, and the MMC Replay cartridge with the RR-Net add on for the physical connection to the net. 
+BREADBOX64 is a twitter client for the C64/128 which allows you to tweet from a real C64 and show your friends timeline. It uses Contiki, a very nice embedded OS, and the MMC Replay cartridge with the RR-Net add on for the physical connection to the net. 
 
 # About
 
@@ -14,15 +13,19 @@ The commodore 64 will always have a sweet spot in my heart. Although not my firs
 
 # The C64
 
-[![320px-commodore64](images/320px-commodore64.jpg)](https://vandenbran.de/2009/06/09/breadbox64-a-twitter-client-for-the-c64/320px-commodore64/)The C64 was introduced by Commodore in august 1982, it is 25 years old now. It had astounding graphics and sound capabilities for its time, but if you look at them now they are a bit outdated. The CPU, a 6502 from MOS Technologies, runs at 985Khz, the maximal screen resolution is 320x256 and it has 64KB of RAM.
+![commodore64](images/320px-commodore64.jpg)
 
-[http://en.wikipedia.org/wiki/Commodore\_64](http://en.wikipedia.org/wiki/Commodore_64)
+The C64 was introduced by Commodore in august 1982, it is 25 years old now. It had astounding graphics and sound capabilities for its time, but if you look at them now they are a bit outdated. The CPU, a 6502 from MOS Technologies, runs at 985Khz, the maximal screen resolution is 320x256 and it has 64KB of RAM.
+
+[http://en.wikipedia.org/wiki/Commodore_64](http://en.wikipedia.org/wiki/Commodore_64)
 
 # The Ethernet adapter
 
-![rrnet](images/rrnet.jpg "rrnet") Even today there is a vibrant scene around the C64. There are even hardware add ons being produced right now. Most add ons take the form of cartridges that plug into the back of the machine. One of these is the MMC replay cartridge that, among others, can add ethernet capabilities to the C64 via a daughter board RR-net.
+![rrnet](images/rrnet.jpg "rrnet")
 
-[http://www.c64-wiki.com/index.php/MMC\_Replay](http://www.c64-wiki.com/index.php/MMC_Replay)
+Even today there is a vibrant scene around the C64. There are even hardware add ons being produced right now. Most add ons take the form of cartridges that plug into the back of the machine. One of these is the MMC replay cartridge that, among others, can add ethernet capabilities to the C64 via a daughter board RR-net.
+
+[http://www.c64-wiki.com/index.php/MMC_Replay](http://www.c64-wiki.com/index.php/MMC_Replay)
 
 # The OS
 
@@ -36,9 +39,13 @@ CC65 is a Small C compiler or the 6502. The 6502 is the CPU found in the C64 and
 
 # The result
 
-\[caption id="attachment\_261" align="aligncenter" width="384"\]![breadbox64_welcome](images/breadbox64_welcome.png "breadbox64_welcome") The welcome screen, ready to log in!\[/caption\]
+![breadbox64_welcome](images/breadbox64_welcome.png "breadbox64_welcome"){: dither="no" }
 
-\[caption id="attachment\_263" align="aligncenter" width="384"\]![breadbox64_main](images/breadbox64_main.png "breadbox64_main") Twittering from a C64\[/caption\]
+The welcome screen, ready to log in!
+
+![breadbox64_main](images/breadbox64_main.png "breadbox64_main"){: dither="no" }
+
+Twittering from a C64.
 
 With BREADBOX64 you can post status messages and view your friends timeline. The timeline refreshes every two minutes.  After starting you provide your twitter username and password separated by a colon. After pressing enter, the timeline is retrieved and shown. At the bottom of the screen there is an input field for you to type aq status message. Pressing enter will post that message to twitter.
 
@@ -50,10 +57,4 @@ Although primarely programmed for the C64 BREADBOX64 should compile for other sy
 
 If you fancy this piece of software, you can follow [breadbox64](http://twitter.com/breadbox64) on twitter! I'll give some status updates on how this project evolves...
 
-# See it run on a C128D in C64 mode.
-
-# Download
-
-\[caption id="attachment\_293" align="aligncenter" width="128"\]![Download BREADBOX64](images/bb64.jpg "BREADBOX64 disk image") Download BREADBOX64\[/caption\]
-
-[breadbox64 source code](http://www.vandenbrande.com/wp/wp-content/uploads/2009/06/breadbox64_src.tgz)
+[breadbox64 source code](https://sourceforge.net/p/contikiprojects/code/HEAD/tree/vandenbrande.com/twitter/)

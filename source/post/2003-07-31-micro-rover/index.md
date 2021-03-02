@@ -18,7 +18,7 @@ The robot has a tank like locomotion. I've grown fond of this type of locomotion
 
 The robot has 4 connectors; one to charge the batteries, another one to program the robot, a serial connector and one expansion bus, exposing 8 data lines, from which 4 our ADC capable. I've build a wireless module to put on top of the robot. More on that will follow, sufficient to say now that it uses a BIM2 transceiver from radiometrix. I've experienced some troubles getting the PCB ready for the PC host adapter, as I had to redo the PCB for a few times to get it _right_. Hence, I put the wireless module on a lower priority.
 
-![](images/video.png)
+![](images/video.png "Preview image of the video")
 
 [Link to a small video](https://vimeo.com/516676393)
 

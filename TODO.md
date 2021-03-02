@@ -1,5 +1,15 @@
 # Make Site Trash
 
+```
+T_R_A_S_H   M_A_K_E   S_I_T_E
+```
+
+My DIY site generator... trash everything, make a new site, or make a trashy new site.
+
+Welcome 90's technology!
+
+## TODO
+
   * [x] Generate RSS
   * [x] Format code
   * [x] Dither images
@@ -11,7 +21,7 @@
   * [x] Override post cover image color in post meta
   * [x] \_\_\_nodither\_\_\_ in image filename disables dithering and takes image as-is.  
   * [x] About page
-  * [ ] Flags for image in {: }, e.g. dither:false, blend: false, ... 
+  * [x] Flags for image in {: }, e.g. dither:false, blend: false, ... 
   * [ ] Only generate changed stuff (time based, compare against marker file, look at .md and images...)
   * [ ] Check each article
   * [ ] Write a new one to motivate site change
