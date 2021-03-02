@@ -16,7 +16,7 @@ From time to time I make something and write about it, sometimes I don't, someti
 If you want to know more about me...
 
    * You can email me at johan@vandenbrande.com ([mailto](mailto:johan@vandenbrande.com)).
-   * You can take a look at my projects on github ([github](https://nanoflite.itch.io/)).
+   * You can take a look at my projects on github ([github](https://github.com/nanoflite)).
    * You can take a look at some of my (retro) games on itchio.io ([itch.io](https://nanoflite.itch.io/)).  
    * You can just take a look around this site.
 

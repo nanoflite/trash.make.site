@@ -22,15 +22,15 @@ Welcome 90's technology!
   * [x] \_\_\_nodither\_\_\_ in image filename disables dithering and takes image as-is.  
   * [x] About page
   * [x] Flags for image in {: }, e.g. dither:false, blend: false, ... 
+  * [x] Check each article
+  * [x] Write a new one to motivate site change
+  * [x] Generate www site (build/www)
+  * [x] Use a Makefile to automate stuff
   * [ ] Only generate changed stuff (time based, compare against marker file, look at .md and images...)
-  * [ ] Check each article
-  * [ ] Write a new one to motivate site change
-  * [ ] Generate www site (build/www)  
   * [ ] Generate finger data from site (build/finger)
   * [ ] Generate gopher site (build/gopher)
   * [ ] Generate gemini site (build/gemini)
   * [ ] Auto deploy on push via github
-  * [ ] Use a Makefile to automate stuff
-  * [ ] Find youtube thumbnails for an [embed] tag
+  * [ ] Find youtube ~thumbnails~ vimeo for an [embed] tag
 
   
