@@ -13,31 +13,25 @@ import os.path
 from shutil import copytree, rmtree
 from mako.lookup import TemplateLookup
 import os
-from fixcaption import FixCaptionExtension
-from extractfirstparagraph import ExtractFirstParagraphExtension
-import yaml
+import sys
+from pathlib import Path
+
 from collections import namedtuple
-from dither import dither
-from ditherimages import DitherImagesExtension
-from adddominantcolor import AddDominantColorProcessorExtension
+import yaml
 from html5print import HTMLBeautifier
 import lxml.etree as etree
-from dominantcolor import (dominant_colors, hexcolor)
 
-source = 'source'
-destination = 'build'
+from .markdown_ext.fixcaption import FixCaptionExtension
+from .markdown_ext.extractfirstparagraph import ExtractFirstParagraphExtension
+from .markdown_ext.ditherimages import DitherImagesExtension
+from .markdown_ext.adddominantcolor import AddDominantColorProcessorExtension
 
-lookup = TemplateLookup(directories=[source + '/template'], module_directory='/tmp/mako_modules')
+from .dither import dither
+from .dominantcolor import (dominant_colors, hexcolor)
 
-# TODO
-# ----
-# - v copy images
-# - copy files (general)
-# - about.md
-# - header / footer
-# - CSS
-# - image -> dither + dominant color -> css
-# - support for gopher / gemini
+source=None
+destination=None
+lookup=None
 
 @dataclass
 class Post:
@@ -58,14 +52,17 @@ class Post:
         print('post:: ' + self.slug)
 
     def dest_folder(self):
-        parts = self.folder.split('/')
-        parts[0] = destination
-        return '/'.join(parts)
+        fpath = Path(self.folder)
+        spath = Path(source)
+        dpath = Path(destination)
+        return str(dpath / fpath.relative_to(spath))
 
     def relative_link(self):
-        parts = self.folder.split('/')
-        parts.pop(0)
-        return '/'.join(parts)
+        fpath = Path(self.folder)
+        spath = Path(source)
+        rel =  str(fpath.relative_to(spath))
+        print('rel', rel)
+        return rel
 
     def changed(self):
         md = self.folder + '/index.md'
@@ -258,5 +255,13 @@ def make_site():
     make_rss(posts)
 
 def main():
+    global source, destination, lookup
+    args = sys.argv[1:]
+    if len(args) != 2:
+        print("python -m TrashMakeSite <source> <destination>")
+        sys.exit(1)
+    source = args[0]
+    destination = args[1]
+    lookup = TemplateLookup(directories=[source + '/template'], module_directory='/tmp/mako_modules')
     make_site()
 
