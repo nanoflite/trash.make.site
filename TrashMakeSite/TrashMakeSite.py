@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+""" ___T_R_A_S_H___M_A_K_E___S_I_T_E___ """
+
+__version__ = "6.6.6"
+
 import glob
 import re
 from datetime import date
@@ -251,6 +257,6 @@ def make_site():
     make_pages(pages)
     make_rss(posts)
 
-if __name__ == '__main__':
+def main():
     make_site()
 
