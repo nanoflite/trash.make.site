@@ -11,9 +11,9 @@ postdeploy:
 
 deploy:
 	@echo "Copying site to server..."
-	@rsync -avzhe ssh --progress ./build/ ${REMOTE}
+	@rsync -avzhe ssh --progress ./build/ ${REMOTE} --delete
 
 build:
 	@echo "Building the site..."
-	@PYTHONUNBUFFERED=1 python make.site.py
+	@PYTHONUNBUFFERED=1 python -m TrashMakeSite ./source ./build
 
