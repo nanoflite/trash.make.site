@@ -1,8 +1,8 @@
 from markdown.preprocessors import Preprocessor
 from markdown.extensions import Extension
 import re
-from dither import dither
-from dominantcolor import (dominant_colors, hexcolor)
+from ..dither import dither
+from ..dominantcolor import (dominant_colors, hexcolor)
 from pathlib import Path
 import os
 
