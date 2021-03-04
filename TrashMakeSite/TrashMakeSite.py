@@ -32,6 +32,7 @@ from .dominantcolor import (dominant_colors, hexcolor)
 source=None
 destination=None
 lookup=None
+clean = True if 'TMS_CLEAN' in os.environ and os.environ.get('TMS_CLEAN') == 'TRUE' else False
 
 @dataclass
 class Post:
@@ -60,15 +61,28 @@ class Post:
     def relative_link(self):
         fpath = Path(self.folder)
         spath = Path(source)
-        rel =  str(fpath.relative_to(spath))
+        rel =  str(fpath.relative_to(spath)) + '/'
         print('rel', rel)
         return rel
 
     def changed(self):
+        print('Changed?')
         md = self.folder + '/index.md'
         ht = self.dest_folder() + '/index.html'
-        if (os.path.exists(ht) and os.path.getmtime(md) < os.path.getmtime(ht)):
+        e = os.path.exists(ht)
+
+        if (not e):
+            print(' --> yes, no exists')
             return True
+
+        mdt = os.path.getmtime(md)
+        htt = os.path.getmtime(ht)
+        newer = mdt > htt
+        if (newer):
+            print(' --> yes, markdown updated')
+            return True
+
+        print(' --> NO')
         return False
 
     def render_html(self):
@@ -106,14 +120,20 @@ class Post:
             copytree(self.folder + '/images', self.dest_folder() + '/images')
 
     def dither_cover(self):
-        dst = self.dest_folder() + '/images/' + 'cover.png'
+        dstFolder = self.dest_folder() + '/images'
+        if (not os.path.exists(dstFolder)):
+            os.mkdir(dstFolder)
+        dst = dstFolder + '/cover.png'
         src = self.folder + '/images/' + self.coverImage
         dither(src, dst, (480, 480))
         return hexcolor(dominant_colors(src)[0])
 
     def render(self, meta, pages):
+        if (not self.changed()):
+            print('--> No change')
+            return
         self.create_dest_folder()
-        self.copy_images()
+        # self.copy_images()
         img, color = self.cover_image()
         cover_d = {}
         cover_d['image'] = img
@@ -162,11 +182,11 @@ class Post:
         return Post(raw, slug, title, post_date, coverImage, categories, folder, '', first, color, blend)
 
 def copy_assets():
-    copytree(source + '/template/assets', destination + '/assets')
+    copytree(source + '/template/assets', destination + '/assets', dirs_exist_ok=True)
 
 def copy_images():
     # We need to 'dither' all images... except maybe a few? Put the no dither ones in  no_dither folder.
-    copytree(source + '/images', destination + '/images')
+    copytree(source + '/images', destination + '/images', dirs_exist_ok=True)
 
 def cover_image():
     src = source + '/images/coverImage.jpg'
@@ -242,7 +262,8 @@ def make_rss(posts):
     f.close()
 
 def make_site():
-    clean_destination()
+    if (clean):
+        clean_destination()
     copy_assets()
     copy_images()
     cover_image()

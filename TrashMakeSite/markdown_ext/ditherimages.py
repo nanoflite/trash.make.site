@@ -4,7 +4,7 @@ import re
 from ..dither import dither
 from ..dominantcolor import (dominant_colors, hexcolor)
 from pathlib import Path
-import os
+import shutil
 
 def _handle_double_quote(s, t):
     k, v = t.split('=', 1)
@@ -59,36 +59,48 @@ class DitherImages(Preprocessor):
 
         self.md.colors = {}
 
+    def dither_image(self, image):
+        src = self.source + '/' + image
+        path = Path(image)
+        new_image = str(path.parent) + '/' + str(path.stem) + '_dithered.png'
+        dst = self.destination + '/' + new_image
+        dither(src, dst, (640, 640))
+        colors = dominant_colors(src)
+        if colors != None:
+            colour = hexcolor(colors[0])
+        else:
+            colour = 'ffffff'
+        return colour
+
+    def new_line(self, match, image, line, colour):
+        path = Path(image)
+        new_image = str(path.parent) + '/' + str(path.stem) + '_dithered.png'
+        new_match = match.replace(image, new_image) + '{: colour="' + colour + '"  }'
+        new_line = line.replace(match, new_match)
+        return new_line
+
+    def copy_image(self, image):
+        src = self.source + '/' + image
+        dst = self.destination + '/' + image
+        shutil.copy(src, dst)
+
     def run(self, lines):
         out = []
         for line in lines:
             m = re.search(IMG_RE, line)
-            if m:
-                match = m.group(0)
-                image = m.group(1)
-                attrs = get_attrs(line)
-                line = re.sub(ATTR_RE, '', line)
-                if attrs.get('dither') == 'no':
-                    out.append(line)
-                else:
-                    src = self.source + '/' + image
-                    path = Path(image)
-                    new_image = str(path.parent) + '/' + str(path.stem) + '_dithered.png'
-                    dst = self.destination + '/' + new_image
-                    if os.path.isfile(src):
-                        dither(src, dst, (640, 640))
-                        colors = dominant_colors(src)
-                        if colors != None:
-                            colour = hexcolor(colors[0])
-                        else:
-                            colour = 'ffffff'
-                        new_match = match.replace(image, new_image) + '{: colour="' + colour + '"  }'
-                        new_line = line.replace(match, new_match)
-                        out.append(new_line)
-                    else:
-                        out.append(line)
-            else:
+            if (not m):
                 out.append(line)
+                continue
+            match = m.group(0)
+            image = m.group(1)
+            attrs = get_attrs(line)
+            line = re.sub(ATTR_RE, '', line)
+            if attrs.get('dither') == 'no':
+                self.copy_image(image)
+                out.append(line)
+            else:
+                colour = self.dither_image(image)
+                out.append(self.new_line(match, image, line, colour))
         return out
 
 class DitherImagesExtension(Extension):
