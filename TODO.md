@@ -6,7 +6,7 @@ T_R_A_S_H   M_A_K_E   S_I_T_E
 
 My DIY site generator... trash everything, make a new site, or make a trashy new site.
 
-Welcome 90's technology!
+Welcome to 90's technology!
 
 ## TODO
 
@@ -26,11 +26,11 @@ Welcome 90's technology!
   * [x] Write a new one to motivate site change
   * [x] Generate www site (build/www)
   * [x] Use a Makefile to automate stuff
-  * [ ] Only generate changed stuff (time based, compare against marker file, look at .md and images...)
+  * [x] Only generate changed stuff (time based, compare against marker file, look at .md and images...)
   * [ ] Generate finger data from site (build/finger)
   * [ ] Generate gopher site (build/gopher)
   * [ ] Generate gemini site (build/gemini)
   * [ ] Auto deploy on push via github
-  * [ ] Find youtube ~thumbnails~ vimeo for an [embed] tag
+  * [ ] Find -youtube- vimeo thumbnails for an [embed] tag
 
   
