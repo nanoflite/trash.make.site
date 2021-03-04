@@ -1,7 +1,7 @@
 SERVER="johan@vandenbran.de"
 REMOTE="johan@vandenbran.de:public"
 
-.PHONY: all build deploy postdeploy
+.PHONY: all build deploy postdeploy serve
 
 all: build deploy postdeploy
 
@@ -17,3 +17,6 @@ build:
 	@echo "Building the site..."
 	@PYTHONUNBUFFERED=1 python -m TrashMakeSite ./source ./build
 
+serve:
+	@echo "Starting local webserver"
+	@python -m http.server --directory ./build
