@@ -1,5 +1,4 @@
 markdown~=3.3.3
-mistletoe~=0.7.2
 mako~=1.1.4
 Pillow~=8.1.0
 git+https://github.com/hbldh/hitherdither
@@ -10,3 +9,4 @@ lxml
 numpy
 scipy
 sklearn
+mistune==2.0.0rc1
