@@ -1,0 +1,5 @@
+<%include file="header.gophermap" />
+% for post in posts:
+1${post.date.isoformat()} - ${post.title}	/${post.relative_link()}
+% endfor
+<%include file="footer.gophermap" />

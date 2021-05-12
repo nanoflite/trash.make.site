@@ -7,9 +7,7 @@ color: "#f0dc82"
 
 In 2014 BASIC became a 50 year old programming language, to celebrate that event I started writing my own BASIC interpreter. How hard could that be? Just a few evenings of work and I would have coded my own... Well, 3 years later I can say I have hit a certain milestone, I can now play flappy bird, written in my own version of BASIC running on my home build computer.
 
-![](images/IMG_20170303_162335-e1488557464130:___adc___.jpg)
-
-Flappy Bird running on my BASIC-1
+![Flappy Bird running on my BASIC-1](images/IMG_20170303_162335-e1488557464130:___adc___.jpg)
 
 ### The reason why
 
@@ -25,9 +23,8 @@ The next problem to tackle was the keyboard input. For this I refurbished a keyb
 
 As an output device I experimented with a thermal printer first. Below you see the small thermal printer and the C64 keyboard connected to a breadboard prototype.
 
-![](images/IMG_20160220_115511-300x225.jpg)
+![First outing of the BASIC-1, still using a thermal printer for output.](images/IMG_20160220_115511-300x225.jpg)
 
-First outing of the BASIC-1, still using a thermal printer for output.
 
 But that was rather cumbersome to use and did not gave me the user experience I wanted. I wanted to [recreate the feeling from this movie](https://youtu.be/uepU_gTkMFY), but with just a cheap thermal printer that became a big no no.
 
@@ -37,31 +34,26 @@ As a storage solution I used an SD card. Although I was planning on using an old
 
 ### High level schematic of the hardware
 
-![](images/BASIC-1-Hardware-1-300x225.png){: dither="no" }
+![High-level schematic.](images/BASIC-1-Hardware-1-300x225.png){: dither="no" }
 
-High-level schematic.
 
 ### The enclosure
 
 I first built the BASIC-1 on a breadboard. That proved to be rather a brittle setup, with wires coming loose when you want to move it or store it.
 
-![](images/IMG_20160616_115846-300x225.jpg)
+![Breadboard prototype.](images/IMG_20160616_115846-300x225.jpg)
 
-Breadboard prototype.
 
 For the enclosure I made a model in Sketchup and [laser cut it](https://vimeo.com/518495951) at the [FabLab013](http://fablab013.nl/) of Tilburg.
 
 The design in Sketchup went fine. I made a view from the top and exported it to DXF.
 
-![](images/Screenshot-2017-03-03-17.23.03-265x300.png)
+![Top view to laser cut.](images/Screenshot-2017-03-03-17.23.03-265x300.png)
 
-Top view to laser cut.
 
 Only, I was not able to make a 3d model out of it as I can't figure out how to bend the upper sheet.
 
-![](images/Screenshot-2017-03-03-17.23.57-300x168.png)
-
-3D view of the BASIC-1.
+![3D view of the BASIC-1.](images/Screenshot-2017-03-03-17.23.57-300x168.png)
 
 ### Putting it all together
 
@@ -98,9 +90,8 @@ The extra IO pins also allowed me to connect a joystick to the XMega. I used a c
 
 After soldering an giving everything a place in the enclosure, I used a hot glue gun to stick everything in place.
 
-![](images/IMG_20160727_232820-300x225.jpg)
+![Inside the BASIC-1.](images/IMG_20160727_232820-300x225.jpg)
 
-Inside the BASIC-1.
 
 ### Programming the BASIC-1
 
@@ -108,9 +99,8 @@ When I started to write some BASIC programs on the BASIC-1, it came clear that f
 
 However, I wanted to automate the part of uploading and executing a BASIC program to the BASIC-1. What I ended up with was to put an audio switch jack between the keyboard serial input and the Arduino Mini. By plugging in an audio jack and connecting that to a USB to UART cable, I could take over the keyboard from my macbook. By using keywords like 'NEW' and 'RUN' I could control the BASIC-1 computer. And by just outputting lines starting with a number, I could program it. Here's a photo of the switch jack setup.
 
-![](images/IMG_20170203_105200-225x300.jpg)
+![Programming interface via audio switch jack.](images/IMG_20170203_105200-225x300.jpg)
 
-Programming interface via audio switch jack.
 
 Next, I wrote a [Python tool to automate talking to the BASIC-1](https://github.com/nanoflite/basic-1-loader). This tool is then used in a [Makefile](https://github.com/nanoflite/basic-1-flappy-bird/blob/master/Makefile) to automate uploading and running a BASIC program.
 
@@ -126,9 +116,8 @@ Now, to be honest, the interpreter I wrote is not ment to be fast. It does not t
 
 As I wanted a moving background as well, I settled on an old animation trick. Instead of redrawing a portion of the screen I redefine the characters on the fly.  Redefining the diagonal stripe characters at run time gives the illusion of a scrolling line.
 
-![](images/Screenshot-2017-03-07-17.18.03-300x82.png)
+![Moving stripes](images/Screenshot-2017-03-07-17.18.03-300x82.png)
 
-Moving stripes
 
 Here's a list of the BASIC commands I implemented to get Flappy Bird running.
 
@@ -145,9 +134,7 @@ For it all to work, I had to split up the program in 2 parts. A loader that firs
 
 You can have a look at [the BASIC listing for Flappy Bird on github](https://github.com/nanoflite/basic-1-flappy-bird). In the README, there is a breakdown of the routines used. For the fun of it, here's a picture of the listing (links to the source of it on github).
 
-![](images/Screenshot-2017-03-08-09.21.02:___no_dither___.png){: dither="no" }
-
-Basic listing for Flappy Bird.
+![Basic listing for Flappy Bird.](images/Screenshot-2017-03-08-09.21.02:___no_dither___.png){: dither="no" }
 
 ### Summary
 

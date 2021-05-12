@@ -25,10 +25,14 @@ from .markdown_ext.fixcaption import FixCaptionExtension
 from .markdown_ext.extractfirstparagraph import ExtractFirstParagraphExtension
 from .markdown_ext.ditherimages import DitherImagesExtension
 from .markdown_ext.adddominantcolor import AddDominantColorProcessorExtension
+from .markdown_ext.addcaption import AddCaptionExtension
+
+from .gopher import mdtogopher
 
 from .dither import dither
 from .dominantcolor import (dominant_colors, hexcolor)
 
+markup='html'
 source=None
 destination=None
 lookup=None
@@ -93,11 +97,21 @@ class Post:
                 lines.pop(0)
             lines.pop(0)
         raw = ''.join(lines)
-        md = markdown.Markdown(extensions=['attr_list', 'codehilite', FixCaptionExtension(), DitherImagesExtension(source=self.folder, destination=self.dest_folder()), AddDominantColorProcessorExtension()])
+        md = markdown.Markdown(extensions=['attr_list', 'codehilite', FixCaptionExtension(), AddCaptionExtension(), DitherImagesExtension(source=self.folder, destination=self.dest_folder()), AddDominantColorProcessorExtension()])
         return md.convert(raw)
 
+    def render_gopher(self):
+        lines = self.raw.splitlines(keepends=True)
+        if lines[0].startswith('---'):
+            lines.pop(0)
+            while not lines[0].startswith('---'):
+                lines.pop(0)
+            lines.pop(0)
+        raw = ''.join(lines)
+        return mdtogopher(raw)
+
     def description_html(self):
-        md = markdown.Markdown(extensions=[FixCaptionExtension()])
+        md = markdown.Markdown(extensions=[FixCaptionExtension(), AddCaptionExtension()])
         html = md.convert(self.description)
         m = re.search("<p>(.*)</p>", html)
         return m.group(1)
@@ -108,6 +122,15 @@ class Post:
         html = template.render(meta=meta, pages=pages, cover=cover, post=self)
         f = open(self.dest_folder() + '/index.html', 'w')
         f.write(HTMLBeautifier.beautify(html, 4))
+        f.close()
+
+    def write_gopher(self, meta, pages, cover):
+        self.render_html() # Ugly, but this copies the images when doing a gopher site
+        template = lookup.get_template('post.gophermap')
+        self.gopher = self.render_gopher()
+        out = template.render(meta=meta, pages=pages, cover=cover, post=self)
+        f = open(self.dest_folder() + '/gophermap', 'w')
+        f.write(out)
         f.close()
 
     def create_dest_folder(self):
@@ -147,7 +170,12 @@ class Post:
         cover_d['blend'] = True if self.blend == 'true' else False
         print(cover_d)
         cover = namedtuple('cover', cover_d.keys())(*cover_d.values())
-        self.write_html(meta, pages, cover)
+        if markup == 'html':
+            self.write_html(meta, pages, cover)
+        elif markup == 'gopher':
+            self.write_gopher(meta, pages, cover)
+        else:
+            pass
 
     def cover_image(self):
         if self.coverImage != None:
@@ -195,10 +223,18 @@ def cover_image():
 
 def make_index(posts, pages):
     meta = load_meta()
-    template = lookup.get_template('index.html')
-    f = open(destination + '/index.html', 'w')
-    f.write(template.render(meta=meta, posts=posts, pages=pages))
-    f.close()
+    if markup == 'html':
+        template = lookup.get_template('index.html')
+        f = open(destination + '/index.html', 'w')
+        f.write(template.render(meta=meta, posts=posts, pages=pages))
+        f.close()
+    elif markup == 'gopher':
+        template = lookup.get_template('index.gophermap')
+        f = open(destination + '/gophermap', 'w')
+        f.write(template.render(meta=meta, posts=posts, pages=pages))
+        f.close()
+    else:
+        pass
 
 def make_404(posts, pages):
     meta = load_meta()
@@ -270,19 +306,21 @@ def make_site():
     posts = read_posts()
     pages = read_pages()
     make_index(posts, pages)
-    make_404(posts, pages)
     make_posts(posts, pages)
     make_pages(pages)
-    make_rss(posts)
+    if markup == 'html':
+        make_404(posts, pages)
+        make_rss(posts)
 
 def main():
-    global source, destination, lookup
+    global source, destination, lookup, markup
     args = sys.argv[1:]
-    if len(args) != 2:
-        print("python -m TrashMakeSite <source> <destination>")
+    if len(args) != 3:
+        print("python -m TrashMakeSite html|gopher <source> <destination>")
         sys.exit(1)
-    source = args[0]
-    destination = args[1]
+    markup=args[0]
+    source = args[1]
+    destination = args[2]
     lookup = TemplateLookup(directories=[source + '/template'], module_directory='/tmp/mako_modules')
     make_site()
 

@@ -10,3 +10,4 @@ numpy
 scipy
 sklearn
 mistune==2.0.0rc1
+pyfiglet

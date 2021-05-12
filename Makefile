@@ -14,9 +14,17 @@ deploy:
 	@rsync -avzhe ssh --progress ./build/ ${REMOTE} --delete
 
 build:
-	@echo "Building the site..."
-	@PYTHONUNBUFFERED=1 python -m TrashMakeSite ./source ./build
+	@echo "Building the html site..."
+	@PYTHONUNBUFFERED=1 python -m TrashMakeSite html ./source ./build
 
 serve:
 	@echo "Starting local webserver"
 	@python -m http.server --directory ./build
+
+build_gopher:
+	@echo "Building the gopher site..."
+	@PYTHONUNBUFFERED=1 python -m TrashMakeSite gopher ./source ./build_gopher
+
+deploy_gopher:
+	@echo "Copying gopher site to server..."
+	@rsync -avzhe ssh --progress ./build_gopher/ ${SERVER}:/var/gopher --delete
