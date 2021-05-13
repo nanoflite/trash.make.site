@@ -30,6 +30,7 @@ Welcome to 90's technology!
   * [x] Use a Makefile to automate stuff
   * [x] Only generate changed stuff (time based, compare against marker file, look at .md and images...)
   * [ ] Generate finger data from site (build/finger)
+  * [ ] Gopher image handling as well (no dither, small size, 256 colors?)
   * [ ] Generate gopher site (build/gopher)
   * [ ] Generate gemini site (build/gemini)
   * [ ] Auto deploy on push via github
