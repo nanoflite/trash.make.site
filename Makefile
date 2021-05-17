@@ -3,7 +3,7 @@ REMOTE="johan@vandenbran.de:public"
 
 .PHONY: all build deploy postdeploy serve
 
-all: build deploy postdeploy
+all: build deploy postdeploy build_gopher deploy_gopher
 
 postdeploy:
 	ssh ${SERVER} "find ./public -type d -exec chmod g+rx {} \;"
