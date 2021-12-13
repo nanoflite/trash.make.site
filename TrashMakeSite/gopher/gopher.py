@@ -56,7 +56,6 @@ class GopherRenderer(BaseRenderer):
 
     def image(self, src, alt="", title=None):
         gif = True if src.endswith('.gif') else False
-        r = str(self.refCount)
         if gif:
             line = 'g' + (alt or title or 'image') + '\t' + src + '\n'
         else:
