@@ -1,14 +1,28 @@
 ```
- _____ ___    _   ___ _  _     __  __   _   _  _____     ___ ___ _____ ___ 
-|_   _| _ \  /_\ / __| || |   |  \/  | /_\ | |/ / __|   / __|_ _|_   _| __|
-  | | |   / / _ \\__ \ __ |   | |\/| |/ _ \| ' <| _|    \__ \| |  | | | _| 
-  |_| |_|_\/_/ \_\___/_||_|   |_|  |_/_/ \_\_|\_\___|   |___/___| |_| |___|
+
+   ██                            ██                               ██                        ██   ██          
+  ░██                           ░██                              ░██                       ░░   ░██          
+ ██████ ██████  ██████    ██████░██         ██████████   ██████  ░██  ██  █████      ██████ ██ ██████  █████ 
+░░░██░ ░░██░░█ ░░░░░░██  ██░░░░ ░██████    ░░██░░██░░██ ░░░░░░██ ░██ ██  ██░░░██    ██░░░░ ░██░░░██░  ██░░░██
+  ░██   ░██ ░   ███████ ░░█████ ░██░░░██    ░██ ░██ ░██  ███████ ░████  ░███████   ░░█████ ░██  ░██  ░███████
+  ░██   ░██    ██░░░░██  ░░░░░██░██  ░██ ██ ░██ ░██ ░██ ██░░░░██ ░██░██ ░██░░░░  ██ ░░░░░██░██  ░██  ░██░░░░ 
+  ░░██ ░███   ░░████████ ██████ ░██  ░██░██ ███ ░██ ░██░░████████░██░░██░░██████░██ ██████ ░██  ░░██ ░░██████
+   ░░  ░░░     ░░░░░░░░ ░░░░░░  ░░   ░░ ░░ ░░░  ░░  ░░  ░░░░░░░░ ░░  ░░  ░░░░░░ ░░ ░░░░░░  ░░    ░░   ░░░░░░ 
+
                           T_R_A_S_H   M_A_K_E   S_I_T_E
 ```
 
 My DIY site generator... trash everything, make a new site, or make a trashy new site.
 
 Welcome to 90's technology!
+
+## Features
+
+  * Generate personalised internet presence from markdown files
+  * Generates a website
+  * Generates a gopher hole
+  * Generates a gemini capsule
+  * Dithers images for lower bandwidth / authentic look
 
 ## TODO
 
@@ -30,9 +44,9 @@ Welcome to 90's technology!
   * [x] Use a Makefile to automate stuff
   * [x] Only generate changed stuff (time based, compare against marker file, look at .md and images...)
   * [ ] Generate finger data from site (build/finger)
-  * [ ] Gopher image handling as well (no dither, small size, 256 colors?)
-  * [ ] Generate gopher site (build/gopher)
-  * [ ] Generate gemini site (build/gemini)
+  * [x] Gopher image handling as well (no dither, small size, 256 colors?)
+  * [x] Generate gopher site (build/gopher)
+  * [x] Generate gemini site (build/gemini)
   * [ ] Auto deploy on push via github
   * [ ] Find -youtube- vimeo thumbnails for an [embed] tag
 
