@@ -1,0 +1,5 @@
+<%include file="header.gmi" />
+% for post in posts:
+=> /${post.relative_link()} ${post.date.isoformat()} - ${post.title}
+% endfor
+<%include file="footer.gmi" />

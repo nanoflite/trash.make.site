@@ -1,0 +1,11 @@
+# ${meta.title}
+
+${meta.description}
+
+=> / Home
+
+# ${post.title}
+
+${post.gemini}
+
+<%include file="footer.gmi" />

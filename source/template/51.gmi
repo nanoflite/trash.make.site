@@ -1,0 +1,11 @@
+<%include file="header.gmi" />
+
+# It looks like you did not find what you were looking for...
+
+This site has been through a makeover. You can read more about this on my 'about page'.
+
+=> /about.gmi
+
+If you think something is really missing, then let me know...
+
+<%include file="footer.gmi" />

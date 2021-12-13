@@ -9,5 +9,5 @@ lxml
 numpy
 scipy
 sklearn
-mistune==2.0.0rc1
+mistune==2.0.0
 pyfiglet

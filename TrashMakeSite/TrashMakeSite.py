@@ -28,6 +28,7 @@ from .markdown_ext.adddominantcolor import AddDominantColorProcessorExtension
 from .markdown_ext.addcaption import AddCaptionExtension
 
 from .gopher import mdtogopher
+from .gemini import mdtogemini
 
 from .dither import dither
 from .dominantcolor import (dominant_colors, hexcolor)
@@ -110,6 +111,16 @@ class Post:
         raw = ''.join(lines)
         return mdtogopher(raw)
 
+    def render_gemini(self):
+        lines = self.raw.splitlines(keepends=True)
+        if lines[0].startswith('---'):
+            lines.pop(0)
+            while not lines[0].startswith('---'):
+                lines.pop(0)
+            lines.pop(0)
+        raw = ''.join(lines)
+        return mdtogemini(raw)
+
     def description_html(self):
         md = markdown.Markdown(extensions=[FixCaptionExtension(), AddCaptionExtension()])
         html = md.convert(self.description)
@@ -130,6 +141,15 @@ class Post:
         self.gopher = self.render_gopher()
         out = template.render(meta=meta, pages=pages, cover=cover, post=self)
         f = open(self.dest_folder() + '/gophermap', 'w')
+        f.write(out)
+        f.close()
+
+    def write_gemini(self, meta, pages, cover):
+        self.render_html() # Ugly, but this copies the images when doing a gopher site
+        template = lookup.get_template('post.gmi')
+        self.gemini = self.render_gemini()
+        out = template.render(meta=meta, pages=pages, cover=cover, post=self)
+        f = open(self.dest_folder() + '/index.gmi', 'w')
         f.write(out)
         f.close()
 
@@ -174,6 +194,8 @@ class Post:
             self.write_html(meta, pages, cover)
         elif markup == 'gopher':
             self.write_gopher(meta, pages, cover)
+        elif markup == 'gemini':
+            self.write_gemini(meta, pages, cover)
         else:
             pass
 
@@ -231,6 +253,11 @@ def make_index(posts, pages):
     elif markup == 'gopher':
         template = lookup.get_template('index.gophermap')
         f = open(destination + '/gophermap', 'w')
+        f.write(template.render(meta=meta, posts=posts, pages=pages))
+        f.close()
+    elif markup == 'gemini':
+        template = lookup.get_template('index.gmi')
+        f = open(destination + '/index.gmi', 'w')
         f.write(template.render(meta=meta, posts=posts, pages=pages))
         f.close()
     else:
@@ -316,7 +343,7 @@ def main():
     global source, destination, lookup, markup
     args = sys.argv[1:]
     if len(args) != 3:
-        print("python -m TrashMakeSite html|gopher <source> <destination>")
+        print("python -m TrashMakeSite html|gopher|gemini <source> <destination>")
         sys.exit(1)
     markup=args[0]
     source = args[1]
