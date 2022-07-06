@@ -2,7 +2,7 @@
 title: "Flappy bird running on my home build BASIC computer."
 date: "2017-03-08"
 coverImage: "IMG_20170303_131401-e1488545219237.jpg"
-color: "#f0dc82"
+color: "#000000"
 ---
 
 In 2014 BASIC became a 50 year old programming language, to celebrate that event I started writing my own BASIC interpreter. How hard could that be? Just a few evenings of work and I would have coded my own... Well, 3 years later I can say I have hit a certain milestone, I can now play flappy bird, written in my own version of BASIC running on my home build computer.

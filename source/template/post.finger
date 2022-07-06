@@ -1,0 +1,34 @@
+#!/usr/pkg/bin/bash
+
+user=$4
+
+if [[ $user != 'johan' ]]; then
+        echo "bad bad bad"
+        exit 0
+fi
+
+cat <<INFO
+
+Hello! I'm ...
+
+$(/usr/pkg/bin/figlet -f slant Johan)
+
+... welcome to my finger profile.
+
+There's nothing much to see here, but drop me a line when you actually used finger to know a bit more
+about me ;-)
+
+Here's some pointers:
+
+   * You can email me at johan@vandenbrande.com (mailto:johan@vandenbran.de).
+   * You can take a look at my projects on github (https://github.com/nanoflite).
+   * You can take a look at some of my (retro) games on itchio.io (https://nanoflite.itch.io/).
+   * You can just take a look around my blog, it is available over at
+       --> https://vandenbran.de (website)
+       --> gopher://vandenbran.de  (gopherhole)
+       --> gemini://vandenbran.de (gemini capsule)
+
+   (\/)
+  ( ..)
+ C(")(")
+INFO

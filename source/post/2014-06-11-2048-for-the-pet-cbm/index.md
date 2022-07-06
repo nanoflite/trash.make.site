@@ -2,7 +2,7 @@
 title: "2048 for the PET CBM"
 date: "2014-06-11"
 coverImage: "Screen-Shot-2014-06-04-at-16.45.22.png"
-color: "#333333"
+color: "#000000"
 blend: "false"
 ---
 

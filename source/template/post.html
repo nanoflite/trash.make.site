@@ -1,6 +1,10 @@
 <%include file="header_post.html" />
 <article>
+    <hr>
     <h1>${post.title}</h1>
+    <hr>
+    <time>${post.date.isoformat()}</time>
+    <br/>
     ${post.html}
 </article>
 <%include file="footer.html" />

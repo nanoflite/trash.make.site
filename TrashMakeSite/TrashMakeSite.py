@@ -144,6 +144,16 @@ class Post:
         f.write(out)
         f.close()
 
+    def write_finger(self, meta, pages):
+        template = lookup.get_template('post.finger')
+        self.gopher = self.render_gopher()
+        cover = self.makeCover(meta, True)
+        out = template.render(meta=meta, pages=pages, cover=cover, post=self)
+        os.makedirs(destination, exist_ok=True)
+        f = open(destination + '/info', 'w')
+        f.write(out)
+        f.close()
+
     def write_gemini(self, meta, pages, cover):
         self.render_html() # Ugly, but this copies the images when doing a gopher site
         template = lookup.get_template('post.gmi')
@@ -171,12 +181,9 @@ class Post:
         dither(src, dst, (480, 480))
         return hexcolor(dominant_colors(src)[0])
 
-    def render(self, meta, pages):
-        if (not self.changed()):
-            print('--> No change')
-            return
-        self.create_dest_folder()
-        # self.copy_images()
+    def makeCover(self, meta, empty=False):
+        if empty:
+            return namedtuple('cover', [])
         img, color = self.cover_image()
         cover_d = {}
         cover_d['image'] = img
@@ -184,12 +191,20 @@ class Post:
             cover_d['color'] = self.color
         else:
             if color:
-                cover_d['color'] = '#'+color
+                cover_d['color'] = '#' + color
             else:
                 cover_d['color'] = meta.color
         cover_d['blend'] = True if self.blend == 'true' else False
         print(cover_d)
-        cover = namedtuple('cover', cover_d.keys())(*cover_d.values())
+        return namedtuple('cover', cover_d.keys())(*cover_d.values())
+
+    def render(self, meta, pages):
+        if (not self.changed()):
+            print('--> No change')
+            return
+        self.create_dest_folder()
+        cover = self.makeCover(meta)
+
         if markup == 'html':
             self.write_html(meta, pages, cover)
         elif markup == 'gopher':
@@ -324,26 +339,35 @@ def make_rss(posts):
     f.write(xml)
     f.close()
 
+def render_finger():
+    meta = load_meta()
+    pages = read_pages()
+    page = Post.create(source + '/page/about')
+    page.write_finger(meta, pages)
+
 def make_site():
     if (clean):
         clean_destination()
-    copy_assets()
-    copy_images()
-    cover_image()
-    posts = read_posts()
-    pages = read_pages()
-    make_index(posts, pages)
-    make_posts(posts, pages)
-    make_pages(pages)
-    if markup == 'html':
-        make_404(posts, pages)
-        make_rss(posts)
+    if markup == 'finger':
+        render_finger()
+    else:
+        copy_assets()
+        copy_images()
+        cover_image()
+        posts = read_posts()
+        pages = read_pages()
+        make_index(posts, pages)
+        make_posts(posts, pages)
+        make_pages(pages)
+        if markup == 'html':
+            make_404(posts, pages)
+            make_rss(posts)
 
 def main():
     global source, destination, lookup, markup
     args = sys.argv[1:]
     if len(args) != 3:
-        print("python -m TrashMakeSite html|gopher|gemini <source> <destination>")
+        print("python -m TrashMakeSite html|gopher|gemini|finger <source> <destination>")
         sys.exit(1)
     markup=args[0]
     source = args[1]
