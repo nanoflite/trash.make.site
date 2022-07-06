@@ -167,6 +167,7 @@ class Post:
         folder = self.dest_folder()
         if not os.path.exists(folder):
             os.makedirs(folder, exist_ok=True)
+            os.makedirs(folder + "/images", exist_ok=True)
 
     def copy_images(self):
         if os.path.exists(self.folder + '/images'):
