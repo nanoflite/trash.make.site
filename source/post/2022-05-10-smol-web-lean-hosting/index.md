@@ -60,7 +60,7 @@ I really like this setup. It gives me the power I need and very strangely, havin
 I run all of these services, like in the good old times, from [inetd](https://en.wikipedia.org/wiki/Inetd).
 
   * [Bozotic http://](https://en.wikipedia.org/wiki/Inetd)
-  * [Gophernicus gopher://]()
+  * [Gophernicus gopher://](https://gophernicus.org/)
   * [vger gemini://](https://tildegit.org/solene/vger)
   * [fingerd](https://man.netbsd.org/NetBSD-5.0.1/fingerd.8)
 
