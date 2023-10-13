@@ -1,9 +1,6 @@
---- # Site metadata info
-title: We are technology
-description: A blog about technology...
-type: website
-image: /images/cover.png
-color: "#000000"
-url: https://vandenbran.de
-copyright: "(c) 2022 johan Van den Brande"
-ttl: 1800
+TITLE="We are technology"
+DESCRIPTION="A blog about technology..."
+IMAGE=/images/cover.png
+URL=https=//vandenbran.de
+COPYRIGHT="(c) 2022 johan Van den Brande"
+TTL=1800
