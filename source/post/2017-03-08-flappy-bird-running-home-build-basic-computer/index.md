@@ -1,10 +1,3 @@
----
-title: "Flappy bird running on my home build BASIC computer."
-date: "2017-03-08"
-coverImage: "IMG_20170303_131401-e1488545219237.jpg"
-color: "#000000"
----
-
 In 2014 BASIC became a 50 year old programming language, to celebrate that event I started writing my own BASIC interpreter. How hard could that be? Just a few evenings of work and I would have coded my own... Well, 3 years later I can say I have hit a certain milestone, I can now play flappy bird, written in my own version of BASIC running on my home build computer.
 
 ![Flappy Bird running on my BASIC-1](images/IMG_20170303_162335-e1488557464130:___adc___.jpg)
@@ -34,7 +27,7 @@ As a storage solution I used an SD card. Although I was planning on using an old
 
 ### High level schematic of the hardware
 
-![High-level schematic.](images/BASIC-1-Hardware-1-300x225.png){: dither="no" }
+![High-level schematic.](images/BASIC-1-Hardware-1-300x225.png)
 
 
 ### The enclosure
@@ -134,7 +127,7 @@ For it all to work, I had to split up the program in 2 parts. A loader that firs
 
 You can have a look at [the BASIC listing for Flappy Bird on github](https://github.com/nanoflite/basic-1-flappy-bird). In the README, there is a breakdown of the routines used. For the fun of it, here's a picture of the listing (links to the source of it on github).
 
-![Basic listing for Flappy Bird.](images/Screenshot-2017-03-08-09.21.02:___no_dither___.png){: dither="no" }
+![Basic listing for Flappy Bird.](images/Screenshot-2017-03-08-09.21.02.png)
 
 ### Summary
 
@@ -147,6 +140,11 @@ I really enjoyed trying to get Flappy Bird to run. It was nice to do some BASIC 
 I  have some ideas on the future of my BASIC interpreter. One of the things I'm toying with is porting it to the Raspberry Pi with a minimal frame buffer interface. I think that could create a nice little BASIC game computer... we will see.
 
 To close, [here's a video of the BASIC-1 in action](https://vimeo.com/518497249).
+
+#### XXX
+
+[Test1](mailto:johan@vdb.xc)
+X[Test2](http://knalpap.com)
 
 ### References
 

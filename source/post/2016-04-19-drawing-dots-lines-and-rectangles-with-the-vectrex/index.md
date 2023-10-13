@@ -1,9 +1,3 @@
----
-title: "Drawing dots, lines and rectangles with the Vectrex."
-date: "2016-04-19"
-coverImage: "manual01.jpg"
----
-
 Last time I talked about setting up a toolchain for Vectrex development using CMOC, a C compiler for the 6809. This time we'll write some code to display dots, lines, rectangles and text. We'll also discuss a Makefile you can use for your own project and show you how to customize the startup screen of your Vectrex application. This post shows you that there is no magic involved in writing applications for the Vectrex.
 
 ### Let's draw a rectangle with 4 dots

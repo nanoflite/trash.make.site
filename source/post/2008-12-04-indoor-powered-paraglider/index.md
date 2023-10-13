@@ -1,9 +1,3 @@
----
-title: "Indoor powered paraglider"
-date: "2008-12-04"
-coverImage: "pc020035.jpg"
----
-
 Inspired by some local guys who fly paramotors on quiet evenings I decided to build myself an indoor paramotor. After some research I came up with a rather simple design for a motor powered paraglider which has a sail of 36cm span and a chord of 12cm. For the carriage I went for a recycled robocopter guy - this is a helicopter toy that has a robot like body instead of a conventional helicopter fuselage. After some surgery like letting a stake protrude from its chest he seems happy after all beneath the small sail. A light weight grocery bag is used for the sail, which is semi self supporting because of  depron ribs and a carbon rod spar.
 
 ### Demo movie

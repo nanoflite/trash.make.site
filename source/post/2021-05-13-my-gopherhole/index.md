@@ -1,8 +1,3 @@
----
-title: "My blog is now available as a gopher hole"
-date: "2021-05-17"
----
-
 Gopher, an Internet protocol for information sharing, which predates the World Wide Web seems to be having some kind of revival...
 
 ### The obese World Wide Web

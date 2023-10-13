@@ -1,9 +1,3 @@
----
-title: "How to plot Inkscape drawings on a vintage VC1520 plotter."
-date: "2016-05-18"
-coverImage: "IMG_20160518_105028.jpg"
----
-
 I'm a fan of old computers and their peripherals, actually I have a small collection of mostly Commodore equipment. One of my favorite peripherals is the VC1520 plotter printer. In this post I'll show you how you can use my Inkscape extension to drive the VC1520.
 
 I bought the VC1520 around ten years ago, when collecting retro computers was not yet that hot. I do not remember the exact price I paid for it, but I think it came with a big pile of C64 material I bought for a few euros.

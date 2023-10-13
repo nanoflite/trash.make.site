@@ -1,9 +1,3 @@
----
-title: "Converting a LED cube into an extreme feedback device"
-date: "2008-04-28"
-coverImage: "side_usb_192x256.jpg"
----
-
 Recently I created an extreme feedback device from a LED cube. An extreme feedback device provides a rapid feedback cycle after a commit to the repository. Having a visual clue on the state of the project is very valuable. If introduced correctly it can boost productivity and morale within a team considerably.
 
 ### Introduction

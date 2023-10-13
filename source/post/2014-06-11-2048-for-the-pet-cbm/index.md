@@ -1,11 +1,3 @@
----
-title: "2048 for the PET CBM"
-date: "2014-06-11"
-coverImage: "Screen-Shot-2014-06-04-at-16.45.22.png"
-color: "#000000"
-blend: "false"
----
-
 This a port of the 2048 game to the CBM PET 4032. This game is part of a work to port 2048 to the C64, VIC20 and 4032. There are not many new games being released for the 4032, which is understandable given that it is an ancient machine which was created as a business machine and not as a gaming console. However, I find it a very challenging task to write games for this very limited platform. 
 
 ![CBM PET 2048](images/Screen-Shot-2014-06-04-at-16.45.22-150x150.png)

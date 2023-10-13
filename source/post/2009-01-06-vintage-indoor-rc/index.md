@@ -1,9 +1,3 @@
----
-title: "Vintage Indoor RC"
-date: "2009-01-06"
-coverImage: "pb080109.jpg"
----
-
 This winter I revamped my oldest indoor RC equipment, a few BitCar receivers and a hacked transmitter, to experience some lo-tech indoor fun. If you think about it, this equipment is not so different from the early equipment used at the dawn of the RC flying hobby. Most early RC planes flew rudder only, with a fixed amount of motor time, basically until the fuel ran out. I found some [great vintage footage](http://www.rchalloffame.org/Video/index.html) on the web that illustrates all the fun you can get from flying early day RC planes ;-)
 
 ![My vintage indoor RC set](images/pb080109.jpg)

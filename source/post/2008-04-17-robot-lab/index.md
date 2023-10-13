@@ -1,10 +1,3 @@
----
-title: "Robot Lab"
-date: "2008-04-17"
-coverImage: "robotlab_275_71.png"
-color: "#E28080"
----
-
 Some thoughts about my robot lab...
 
 ![](images/robotlab_275_71.png "robotlab_275_71")

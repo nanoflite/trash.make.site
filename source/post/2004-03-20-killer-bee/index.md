@@ -1,9 +1,3 @@
----
-title: "Killerbee - a nano sumo class bot."
-date: "2004-03-20"
-coverImage: "killerbee_41.jpg"
----
-
 Killerbee is my first attempt at building a nano sumo bot. These bots have a maximum dimension of 25x25x25 mm and a maximum mass of 25 grams. Killerbee uses a custom build gearbox based on 2 small hobby servos. Its brains are a ATMega8 clocked at 16MHz. Power comes from a 90mAh LiPo battery. It has two line sensors at the bottom and one object sensor, on the front. A custom connector at the back provides an ISP programming interface a serial communication port and two terminals to charge the battery. A small SMD switch allows the bot to be switched on/off.
 
 ![](images/killerbee_11.jpg "killerbee front")

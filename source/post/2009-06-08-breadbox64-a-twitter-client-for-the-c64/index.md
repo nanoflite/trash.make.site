@@ -1,10 +1,3 @@
----
-title: "BREADBOX64, a twitter client for the C64."
-date: "2009-06-08"
-coverImage: "breadbox64_logo.png"
-color: "#000000"
----
-
 BREADBOX64 is a twitter client for the C64/128 which allows you to tweet from a real C64 and show your friends timeline. It uses Contiki, a very nice embedded OS, and the MMC Replay cartridge with the RR-Net add on for the physical connection to the net. 
 
 # About

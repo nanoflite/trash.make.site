@@ -1,9 +1,3 @@
----
-title: "Tavvy"
-date: "2002-04-01"
-coverImage: "tavvy_small1.jpg"
----
-
 ![](images/tavvy_small1.jpg "Tavvy a tabletop autonomous vehicle.")
 
 The first robot I build, with the following characteristics:

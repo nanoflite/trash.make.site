@@ -1,10 +1,3 @@
----
-title: "My small web setup"
-date: "2022-05-10"
-coverImage: "homelab.jpg"
-color: "#000000"
----
-
 Tech minimalism... does that even exists? I don't know. What I do know is that I'm on a quest to take back control of my internet presence, and I made a huge step towards this. All my sites got moved away from hosting in the cloud or on a dedicated (rented) server to my home lab (as they say it...). Even more, my personal internet site is hosted on a Raspberry Pi 3, together with a gopher, gemini and finger version.
 
 ### How I came here

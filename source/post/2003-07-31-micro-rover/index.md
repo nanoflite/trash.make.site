@@ -1,9 +1,3 @@
----
-title: "MicroRover"
-date: "2003-07-31"
-coverImage: "simg0818_640x480.jpg"
----
-
 To date, this is my most successful design. It is powered by an Atmel 8535, which means you can write fairly complex applications (8Kb flash). It has 4 tactical sensors, two eyes based on LDR resistors placed in a tube to have directional sensory, one RC5 Ir diode to be able to command the robot using a standard remote control unit and expansion bus on the top of the vehicle (Wireless module has been build).
 
 ![](images/simg0814_640x480.jpg "MicroRover")

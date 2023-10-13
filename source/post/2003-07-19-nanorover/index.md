@@ -1,9 +1,3 @@
----
-title: "NanoRover"
-date: "2003-07-19"
-coverImage: "simg0812_640x480.jpg"
----
-
 This is one of the most unconventional designs I've build up to date. It does not run straight, but crawls. The reason for this is that both motors are unidirectional. It uses two wristwatch lavet-type motors as it main actuators and uses two whiskers and two directional LDR light sensors for sensing it's environment. The biggest problem with robot is the fragile connection of the wheels to the shaft of the engine.
 
 ## Introduction

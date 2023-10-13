@@ -1,9 +1,3 @@
----
-title: "BitESC - Electronic Speedcontroller for bitcars"
-date: "2005-10-28"
-coverImage: "bitesc_overview.jpg"
----
-
 The BitESC is a small electronic speed controller for those little RC cars like the MicroSizer / BitChar-G. It can be used in a small RC plane to have some control over the speed of the motor. The speed of the motor ramps up or down, depending on which of the buttons on the transmitter you press. If no button is pressed, the ESC will ramp the throttle down to a stop after a few seconds. This safety net comes in handy when the plane flies out of transmitter reach.
 
 ![](images/bitesc_164x132.jpg "bitesc_164x132")

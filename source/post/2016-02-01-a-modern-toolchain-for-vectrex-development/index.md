@@ -1,10 +1,3 @@
----
-title: "Setting up a modern toolchain for Vectrex development with CMOC."
-date: "2016-02-01"
-coverImage: "zombievectrex.jpg"
-color: "#000000"
----
-
 Here I'll show you how to set up a toolchain to develop applications in C for the Vectrex game console. You'll end up with a system that allows you to develop programs for the Vectrex in C, run them on an emulator and, if you have the right hardware, run your program straight from your terminal session on a real Vectrex.
 
 A while ago I acquired a Vectrex game console. It is a unique games console because the display is vector graphics based, instead of raster or pixel based as modern computer displays are.

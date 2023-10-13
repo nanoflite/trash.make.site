@@ -1,8 +1,3 @@
----
-title: "A new site"
-date: "2021-03-02"
----
-
 It has been more than three years since I posted my last entry on this (blog) site. I'm not going to explain with a lot of words why this happened, but suffice to say that I got fed-up with creating posts using Wordpress. 
 
 Don't understand me wrong, I love Wordpress, I've been a user of Wordpress for a long time, and I really like it a lot. I even did some consultancy on Wordpress, creating custom web apps with it, wrote some plugins for customers, etc...
