@@ -1,6 +1,7 @@
-TITLE="We are technology"
-DESCRIPTION="A blog about technology..."
-IMAGE=/images/cover.png
-URL=https=//vandenbran.de
-COPYRIGHT="(c) 2022 johan Van den Brande"
-TTL=1800
+SITE_TITLE="We are technology"
+SITE_DESCRIPTION="A blog about technology..."
+SITE_IMAGE=/images/cover.png
+SITE_URL=https=//vandenbran.de
+SITE_COPYRIGHT="(C) 2022 Johan Van den Brande"
+SITE_TTL=1800
+SITE_TYPE=website

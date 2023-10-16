@@ -1,0 +1,227 @@
+#!/usr/bin/env make -f
+
+src := source/data
+dst := build
+
+resizeflag := 800x600\>
+ditherflag := bn256x256
+
+
+.ONESHELL:
+
+.PHONY: debug help clean serve
+
+ALLOWED_PARAMS := '$$SITE_TITLE $$SITE_DESCRIPTION $$SITE_IMAGE $$SITE_NAV \
+	$$SITE_URL $$SITE_COPYRIGHT $$SITE_TTL $$TITLE $$DATE $$IMAGE $$LINK'
+
+mdfiles := $(shell find source/data -name \*.md)
+
+htmlpages := $(patsubst %.md,%.html,\
+				$(patsubst source/data/%,build/html/%,\
+					$(mdfiles)))
+
+htmltheme := $(shell find source/theme -name "*.html") \
+				$(patsubst source/theme/assets/%,build/html/assets/%,\
+			  		$(shell find source/theme/assets -type f))
+
+htmlindex := $(dst)/html/index.html
+
+# -- Handle JPG images
+
+jpgsourceimages := $(shell find $(src) -name "*.jpg") 
+jpgconvertedimages := $(patsubst $(src)/%,$(dst)/images/%,$(jpgsourceimages))
+jpgtargetimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(jpgconvertedimages))
+htmljpgimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(jpgconvertedimages))
+
+
+jpg: $(jpgtargetimages)
+
+$(dst)/images/%.jpg: source/data/%.jpg
+	@echo "dither $(@F)"
+	@mkdir -p $(@D)
+	@convert $< \
+		-set colorspace Gray -separate -average \
+		-resize $(resizeflag) \
+		-ordered-dither $(ditherflag) \
+			$@
+
+$(dst)/html/%.jpg: build/images/%.jpg
+	@echo "copy $(@F)"
+	@mkdir -p $(@D)
+	@cp -a $< $@
+
+
+# -- Handle GIF images
+
+gifsourceimages := $(shell find $(src) -name "*.gif") 
+gifconvertedimages := $(patsubst $(src)/%,$(dst)/images/%,$(gifsourceimages))
+giftargetimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(gifconvertedimages))
+htmlgifimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(gifconvertedimages))
+
+
+gif: $(giftargetimages)
+
+$(dst)/images/%.gif: source/data/%.gif
+	@echo "mono $(@F)"
+	@mkdir -p $(@D)
+	@convert $< \
+		-set colorspace Gray -separate -average \
+		-resize $(resizeflag) \
+			$@
+
+$(dst)/html/%.gif: build/images/%.gif
+	@echo "copy $(@F)"
+	@mkdir -p $(@D)
+	@cp -a $< $@
+
+# -- Handle PNG images
+
+pngsourceimages := $(shell find $(src) -name "*.png") 
+pngconvertedimages := $(patsubst $(src)/%,$(dst)/images/%,$(pngsourceimages))
+pngtargetimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(pngconvertedimages))
+htmlpngimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(pngconvertedimages))
+
+
+png: $(pngtargetimages)
+
+$(dst)/images/%.png: source/data/%.png
+	@echo "mono $(@F)"
+	@mkdir -p $(@D)
+	@convert $< \
+		-set colorspace Gray -separate -average \
+		-resize $(resizeflag) \
+			$@
+
+$(dst)/html/%.png: build/images/%.png
+	@echo "copy $(@F)"
+	@mkdir -p $(@D)
+	@cp -a $< $@
+
+# -- Main
+
+
+targetimages := $(pngtargetimages) $(giftargetimages) $(jpgtargetimages)
+htmlimages := $(htmlpngimages) $(htmlgifimages) $(htmljpgimages)
+
+html := $(htmlindex) $(htmlpages) $(htmltheme) $(htmlimages)
+
+debug:
+	@echo "HTML theme"
+	@echo $(htmltheme) | tr ' ' '\n'
+
+help:
+	$(info blarg start|help)
+
+build: $(html)
+
+
+# TODO:
+#	First, make it work:
+#   - images (jpg -> dither, png|gif -> BW
+#   	-> convert once, copy over to html/gopher/gemini folder
+#   - other files copied as is (allowed: pdf, ...?
+#   - gemini + daemon
+#   - gopher + daemon
+#   - finger + daemon
+#   - deploy with rsync
+#   Next, make it correct:
+#   --> functions for header, footer, body, nav, list, rss
+#   --> clean up code, m
+#   --> Next, make it presentable, documented
+#   Then, make it fast
+#   ==> DONE ;-)
+
+# -- Functions
+
+# -- HTML
+
+
+define htmlheaderfn
+	@set -a \
+		&& source "source/data/meta" \
+		&& export SITE_NAV=$$( \
+			echo $^ \
+				| sed -e 's| |\n|g' \
+				| sed -e 's|^build/html||' \
+				| grep '^/page' \
+				| sort -r \
+				| while read page; do \
+					set -a; \
+					source "source/data/$$(dirname $$page)/meta"; \
+					cat source/theme/index.page.html \
+						| LINK=$$(dirname $$page)/ envsubst $(ALLOWED_PARAMS); \
+			  	  done \
+			) \
+		&& cat source/theme/header.html \
+			| envsubst $(ALLOWED_PARAMS) \
+			> $@
+endef
+
+build/html/%.html: source/data/%.md 
+	@echo $*.html
+	@mkdir -p $(@D)
+	@set -a \
+		&& source "$(<D)/meta" \
+		&& markdown $< \
+			| cat source/theme/header.html - source/theme/footer.html \
+			| envsubst $(ALLOWED_PARAMS) \
+			> $@
+
+build/html/index.html: $(htmlpages) $(htmltheme)
+	@echo $(@F)
+	@mkdir -p $(@D)
+	$(call htmlheaderfn)
+	@#set -a \
+		&& source "source/data/meta" \
+		&& export SITE_NAV=$$( \
+			echo $^ \
+				| sed -e 's| |\n|g' \
+				| sed -e 's|^build/html||' \
+				| grep '^/page' \
+				| sort -r \
+				| while read page; do \
+					set -a; \
+					source "source/data/$$(dirname $$page)/meta"; \
+					cat source/theme/index.page.html \
+						| LINK=$$(dirname $$page)/ envsubst $(ALLOWED_PARAMS); \
+			  	  done \
+			) \
+		&& cat source/theme/header.html \
+			| envsubst $(ALLOWED_PARAMS) \
+			> $@
+	@echo $^ \
+		| sed -e 's| |\n|g' \
+		| sed -e 's|^build/html||' \
+		| grep '^/post' \
+		| sort -r \
+		| while read post; do \
+			set -a; \
+			source "source/data/$$(dirname $$post)/meta"; \
+			cat source/theme/index.post.html \
+				| LINK=$$(dirname $$post)/ envsubst $(ALLOWED_PARAMS); \
+		  done \
+		| envsubst $(ALLOWED_PARAMS) \
+		>> $@
+	@set -a \
+		&& source "source/data/meta" \
+		&& cat source/theme/footer.html \
+			| envsubst $(ALLOWED_PARAMS) \
+			>> $@
+
+
+build/html/assets/%: source/theme/assets/%
+	@mkdir -p $(@D)
+	@cp -a $< $@
+
+clean:
+	rm -rf build
+
+serve:
+	@echo "http://127.0.0.1:8888"
+	@bozohttpd -b -f -I 8888 -X -x index.html ./build/html
+
+watch:
+	@echo "Watching..."
+	@while sleep 0.1; do find source | entr -d trash build; done
+
+

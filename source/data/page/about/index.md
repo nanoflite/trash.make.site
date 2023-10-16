@@ -14,4 +14,3 @@ If you want to know more about me...
    * This about page is also available if you stick out a finger to johan@vandenbran.de.
 
 Know that this site does not use cookies, so there's no being afraid for being tracked. I do keep server logs.
-

@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="/images/icon.png">
     <link rel="stylesheet" href="/assets/index.css">
-    <meta property="og:title" content="${meta.title}" />
-    <meta property="og:type" content="${meta.type}" />
-    <meta property="og:url" content="${meta.url}" />
-    <meta property="og:image" content="${meta.url}${meta.image}" />
-    <title>${meta.title}</title>
+    <meta property="og:title" content="${SITE_TITLE}" />
+    <meta property="og:type" content="${SITE_TYPE}" />
+    <meta property="og:url" content="${SITE_URL}" />
+    <meta property="og:image" content="${SITE_URL}${SITE_IMAGE}" />
+    <title>${SITE_TITLE}</title>
 </head>
 <body>
     <div class="box">
         <div class="column">
-            <p class="cover" style="background-color: ${meta.color}">
-                <img src="/images/cover.png" class="cover-img">
+            <p class="cover" style="background-color: #000000">
+                <img src="images/cover.jpg" class="cover-img">
             </p>
         </div>
         <div class="column">
@@ -22,19 +22,13 @@
                 <nav>
                     <ul>
                         <li><h2><a href="/">Home</a></h2></li>
-                        % for page in pages:
-                        <li>
-                            <h2>
-                                <a href="/${page.relative_link()}">${page.title}</a>
-                            </h2>
-                        </li>
-                        % endfor
+                        ${SITE_NAV}
                         <li><h2><a href="/index.xml">RSS</a></h2></li>
                     </ul>
                 </nav>
                 <hr>
-                <h1>${meta.title}</h1>
+                <h1>${SITE_TITLE}</h1>
                 <hr>
-                <p>${meta.description}</p>
+                <p>${SITE_DESCRIPTION}</p>
             </header>
             <main>
