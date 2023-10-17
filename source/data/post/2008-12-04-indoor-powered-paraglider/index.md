@@ -8,11 +8,11 @@ Inspired by some local guys who fly paramotors on quiet evenings I decided to bu
 
 The sail is made from a light-weight grocery bag and measures 36cm by 12cm. The ribs are made from 2mm depron and have a reflexed airfoil. The airfoil used here is the upper part of the Eppler 184. A total of 10 ribs are placed at 4cm intervals, giving a total span of 36 cm. The reflexed airfoil is choosen for extra longitudenal stability. However, you can argue it is still needed given the very low center of gravity.
 
-![](images/e184.gif){: dither="no" }
+![](images/e184.gif)
 
 The sail is made semi self supporting. It uses ribs to provide the airfoil and a small carbon rod makes sure it does not collapse. At this scale, it will be very hard to make a sail that can sustain its form only by the air captured in pockets.
 
-![](images/e184.png){: dither="no" }
+![](images/e184.png)
 
 The lines are made from knitting yarn. The front lines are approximately 40cm long and the aft ones 43 cm. The angle of attack is approximately set at around 7 to 10 degrees. I should measure it more exactly, but it should be around that number. The angle of attack is rather large, but I had to set it like that because otherwise the paraglider stalls instead of climbs.
 
@@ -35,8 +35,7 @@ The receiver is a MicronInvent minor - one of the best indoor rc receivers aroun
   * Weight: 13 grams
   * LiPo: 50MAh
   * Receiver: Minor RX
-  * Wingspan: 36
-    cm
+  * Wingspan: 36 cm
   * Chord: 12cm
   * Line length: approx. 40cm
   * Pilot: recycled robocopter pilot

@@ -6,6 +6,11 @@ dst := build
 resizeflag := 800x600\>
 ditherflag := bn256x256
 
+convertflags := -set colorspace Gray -separate -average \
+				-resize $(resizeflag) 
+
+convertjpg := $(convertflags) -ordered-dither $(ditherflag)
+
 
 .ONESHELL:
 
@@ -15,6 +20,10 @@ ALLOWED_PARAMS := '$$SITE_TITLE $$SITE_DESCRIPTION $$SITE_IMAGE $$SITE_NAV \
 	$$SITE_URL $$SITE_COPYRIGHT $$SITE_TTL $$TITLE $$DATE $$IMAGE $$LINK'
 
 mdfiles := $(shell find source/data -name \*.md)
+
+
+# meta:
+# $(call pages,html)
 
 htmlpages := $(patsubst %.md,%.html,\
 				$(patsubst source/data/%,build/html/%,\
@@ -26,29 +35,45 @@ htmltheme := $(shell find source/theme -name "*.html") \
 
 htmlindex := $(dst)/html/index.html
 
+gmipages := $(patsubst %.md,%.gmi,\
+				$(patsubst source/data/%,build/gemini/%,\
+					$(mdfiles)))
+
+gmitheme := $(shell find source/theme -name "*.gmi")
+
+gmiindex := $(dst)/gemini/index.gmi
+
+
+# -- Tools
+
+define copy
+	echo "copy $(@F)"
+	mkdir -p $(@D)
+	cp -a $< $@
+endef
+
+# -- Images
+
+define img
+	echo "img $(@F)"
+	mkdir -p $(@D)
+	convert $< $1 $@ 
+endef
+
 # -- Handle JPG images
 
+
+## candidate for meta programming
+# $(eval $(call handleimages,jpg))
+# --> above call generates below + gemini and gopher images)
 jpgsourceimages := $(shell find $(src) -name "*.jpg") 
 jpgconvertedimages := $(patsubst $(src)/%,$(dst)/images/%,$(jpgsourceimages))
 jpgtargetimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(jpgconvertedimages))
 htmljpgimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(jpgconvertedimages))
 
 
-jpg: $(jpgtargetimages)
-
 $(dst)/images/%.jpg: source/data/%.jpg
-	@echo "dither $(@F)"
-	@mkdir -p $(@D)
-	@convert $< \
-		-set colorspace Gray -separate -average \
-		-resize $(resizeflag) \
-		-ordered-dither $(ditherflag) \
-			$@
-
-$(dst)/html/%.jpg: build/images/%.jpg
-	@echo "copy $(@F)"
-	@mkdir -p $(@D)
-	@cp -a $< $@
+	@$(call img,$(convertjpg))
 
 
 # -- Handle GIF images
@@ -58,21 +83,8 @@ gifconvertedimages := $(patsubst $(src)/%,$(dst)/images/%,$(gifsourceimages))
 giftargetimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(gifconvertedimages))
 htmlgifimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(gifconvertedimages))
 
-
-gif: $(giftargetimages)
-
 $(dst)/images/%.gif: source/data/%.gif
-	@echo "mono $(@F)"
-	@mkdir -p $(@D)
-	@convert $< \
-		-set colorspace Gray -separate -average \
-		-resize $(resizeflag) \
-			$@
-
-$(dst)/html/%.gif: build/images/%.gif
-	@echo "copy $(@F)"
-	@mkdir -p $(@D)
-	@cp -a $< $@
+	@$(call img,$(convertflags))
 
 # -- Handle PNG images
 
@@ -81,29 +93,16 @@ pngconvertedimages := $(patsubst $(src)/%,$(dst)/images/%,$(pngsourceimages))
 pngtargetimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(pngconvertedimages))
 htmlpngimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(pngconvertedimages))
 
-
-png: $(pngtargetimages)
-
 $(dst)/images/%.png: source/data/%.png
-	@echo "mono $(@F)"
-	@mkdir -p $(@D)
-	@convert $< \
-		-set colorspace Gray -separate -average \
-		-resize $(resizeflag) \
-			$@
-
-$(dst)/html/%.png: build/images/%.png
-	@echo "copy $(@F)"
-	@mkdir -p $(@D)
-	@cp -a $< $@
+	@$(call img,$(convertflags))
 
 # -- Main
-
 
 targetimages := $(pngtargetimages) $(giftargetimages) $(jpgtargetimages)
 htmlimages := $(htmlpngimages) $(htmlgifimages) $(htmljpgimages)
 
 html := $(htmlindex) $(htmlpages) $(htmltheme) $(htmlimages)
+gmi := $(gmiindex) $(gmipages) $(gmitheme) $(gmiimages)
 
 debug:
 	@echo "HTML theme"
@@ -112,7 +111,11 @@ debug:
 help:
 	$(info blarg start|help)
 
-build: $(html)
+build: build_html build_gmi
+
+build_html: $(html)
+
+build_gmi: $(gmi)
 
 
 # TODO:
@@ -135,86 +138,172 @@ build: $(html)
 
 # -- HTML
 
-
 define htmlheaderfn
-	@set -a \
+	set -a \
 		&& source "source/data/meta" \
-		&& export SITE_NAV=$$( \
-			echo $^ \
-				| sed -e 's| |\n|g' \
-				| sed -e 's|^build/html||' \
-				| grep '^/page' \
-				| sort -r \
-				| while read page; do \
-					set -a; \
-					source "source/data/$$(dirname $$page)/meta"; \
-					cat source/theme/index.page.html \
-						| LINK=$$(dirname $$page)/ envsubst $(ALLOWED_PARAMS); \
-			  	  done \
-			) \
+		&& export SITE_NAV=$$($(call htmltocfn,$(htmlpages),page)) \
 		&& cat source/theme/header.html \
-			| envsubst $(ALLOWED_PARAMS) \
-			> $@
+			| envsubst $(ALLOWED_PARAMS)
+endef
+
+define htmltocfn
+	echo $(1) \
+		| sed -e 's| |\n|g' \
+		| sed -e 's|^build/html||' \
+		| grep '^/$(2)' \
+		| sort -r \
+		| while read $(2); do \
+			set -a; \
+			source "source/data/$$(dirname $$$(2))/meta"; \
+			cat source/theme/index.$(2).html \
+				| LINK=$$(dirname $$$(2))/ envsubst $(ALLOWED_PARAMS); \
+		  done \
+		| envsubst $(ALLOWED_PARAMS)
+endef
+
+define htmlbodyfn
+	set -a \
+		&& source "$(<D)/meta" \
+		&& markdown $< \
+			| envsubst $(ALLOWED_PARAMS)
+endef
+
+define htmlfooterfn
+	set -a \
+		&& source "source/data/meta" \
+		&& cat source/theme/footer.html \
+			| envsubst $(ALLOWED_PARAMS)
 endef
 
 build/html/%.html: source/data/%.md 
 	@echo $*.html
 	@mkdir -p $(@D)
-	@set -a \
-		&& source "$(<D)/meta" \
-		&& markdown $< \
-			| cat source/theme/header.html - source/theme/footer.html \
-			| envsubst $(ALLOWED_PARAMS) \
-			> $@
+	@$(call htmlheaderfn) > $@
+	@$(call htmlbodyfn) >> $@
+	@$(call htmlfooterfn) >> $@
 
 build/html/index.html: $(htmlpages) $(htmltheme)
 	@echo $(@F)
 	@mkdir -p $(@D)
-	$(call htmlheaderfn)
-	@#set -a \
-		&& source "source/data/meta" \
-		&& export SITE_NAV=$$( \
-			echo $^ \
-				| sed -e 's| |\n|g' \
-				| sed -e 's|^build/html||' \
-				| grep '^/page' \
-				| sort -r \
-				| while read page; do \
-					set -a; \
-					source "source/data/$$(dirname $$page)/meta"; \
-					cat source/theme/index.page.html \
-						| LINK=$$(dirname $$page)/ envsubst $(ALLOWED_PARAMS); \
-			  	  done \
-			) \
-		&& cat source/theme/header.html \
-			| envsubst $(ALLOWED_PARAMS) \
-			> $@
-	@echo $^ \
-		| sed -e 's| |\n|g' \
-		| sed -e 's|^build/html||' \
-		| grep '^/post' \
-		| sort -r \
-		| while read post; do \
-			set -a; \
-			source "source/data/$$(dirname $$post)/meta"; \
-			cat source/theme/index.post.html \
-				| LINK=$$(dirname $$post)/ envsubst $(ALLOWED_PARAMS); \
-		  done \
-		| envsubst $(ALLOWED_PARAMS) \
-		>> $@
-	@set -a \
-		&& source "source/data/meta" \
-		&& cat source/theme/footer.html \
-			| envsubst $(ALLOWED_PARAMS) \
-			>> $@
-
+	@$(call htmlheaderfn) > $@
+	@$(call htmltocfn,$^,post) >> $@
+	@$(call htmlfooterfn) >> $@
 
 build/html/assets/%: source/theme/assets/%
-	@mkdir -p $(@D)
-	@cp -a $< $@
+	$(call copy)
 
-clean:
-	rm -rf build
+$(dst)/html/%.jpg: build/images/%.jpg
+	@$(call copy)
+
+$(dst)/html/%.gif: build/images/%.gif
+	@$(call copy)
+
+$(dst)/html/%.png: build/images/%.png
+	@$(call copy)
+
+# -- Gemini
+
+define mdtogmi
+	gawk \
+		' \
+		BEGIN { \
+		    refcnt=0; \
+		    preformat=0; \
+		}; \
+		/^```/ { preformat=!preformat } \
+		{ \
+		    if (preformat) { \
+		        print $$0; \
+		        next; \
+		    } \
+		 	while(match($$0, /!\[[^\]]*\]\([^\)]+\)/)){ \
+		 		split(substr($$0, RSTART, RLENGTH), a, /(!\[)|\)|(\]\()/); \
+		 		sub(/!\[[^\]]*\]\([^\)]+\)/, "=> "a[3]"  "a[2]); \
+		 	} \
+		    while(match($$0, /[^!]?\[[^\]]*\]\([^\]]*\)/)) { \
+				split(substr($$0, RSTART, RLENGTH), a, /[\[\)]|(\]\()/); \
+		        refs[++refcnt]="=> "a[3]"  "a[2] \
+				sub(/\[[^\]]*\]\([^\)]+\)/, a[2]" (ref#"refcnt")"); \
+		    } \
+		    sub(/^\s+/, ""); \
+		    sub(/\t/, "  "); \
+		    sub(/^###+/, "###"); \
+		    print $$0; \
+		}; \
+		END { \
+		    if (refcnt>0) { \
+		        print ""; \
+		        print "# Table of refs:"; \
+		        print ""; \
+		        \
+		        for (x=1; x <= refcnt; x++) \
+		            print refs[x]; \
+		    } \
+		} \
+		' $(1)
+endef
+
+define gmiheaderfn
+	set -a \
+		&& source "source/data/meta" \
+		&& export SITE_NAV=$$($(call gmitocfn,$(gmipages),page)) \
+		&& cat source/theme/header.gmi \
+			| envsubst $(ALLOWED_PARAMS)
+endef
+
+define gmitocfn
+	echo $(1) \
+		| sed -e 's| |\n|g' \
+		| sed -e 's|^build/gemini||' \
+		| grep '^/$(2)' \
+		| sort -r \
+		| while read $(2); do \
+			set -a; \
+			source "source/data/$$(dirname $$$(2))/meta"; \
+			cat source/theme/index.$(2).gmi \
+				| LINK=$$(dirname $$$(2))/ envsubst $(ALLOWED_PARAMS); \
+		  done \
+		| envsubst $(ALLOWED_PARAMS)
+endef
+
+define gmibodyfn
+	set -a \
+		&& source "$(<D)/meta" \
+		&& $(call mdtogmi,$<) \
+			| envsubst $(ALLOWED_PARAMS)
+endef
+
+define gmifooterfn
+	set -a \
+		&& source "source/data/meta" \
+		&& cat source/theme/footer.gmi \
+			| envsubst $(ALLOWED_PARAMS)
+endef
+
+build/gemini/%.gmi: source/data/%.md 
+	@echo $*.gmi
+	@mkdir -p $(@D)
+	@$(call gmiheaderfn) > $@
+	@$(call gmibodyfn) >> $@
+	$(call gmifooterfn) >> $@
+
+build/gemini/index.gmi: $(gmipages) $(gmitheme)
+	@echo $(@F)
+	@mkdir -p $(@D)
+	@$(call gmiheaderfn) > $@
+	@$(call gmitocfn,$^,post) >> $@
+	$(call gmifooterfn) >> $@
+
+# -- Tools
+
+clean: clean_html clean_gmi
+	@rm -rf build
+
+clean_html:
+	@rm -rf build/html
+
+clean_gmi:
+	@rm -rf build/gemini
 
 serve:
 	@echo "http://127.0.0.1:8888"
@@ -223,5 +312,3 @@ serve:
 watch:
 	@echo "Watching..."
 	@while sleep 0.1; do find source | entr -d trash build; done
-
-

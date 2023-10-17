@@ -11,15 +11,14 @@
 ░░░    ░░░  ░░░░░░ ░░░  ░░░░░   ░░░░░░  ░░░  ░░  ░░  ░░░░░░
 
 ```
-# ${meta.title}
+# ${SITE_TITLE}
 
-${meta.description}
+${SITE_DESCRIPTION}
 
 # Menu
 
 => / Home
-% for page in pages:
-=> /${page.relative_link()} ${page.title}
-% endfor
+${SITE_NAV}
 
 # Posts
+
