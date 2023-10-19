@@ -1,5 +1,23 @@
 #!/usr/bin/env make -f
 
+# TODO:
+#	First, make it work:
+#   - images (jpg -> dither, png|gif -> BW
+#   	-> convert once, copy over to html/gopher/gemini folder
+#   - other files copied as is (allowed: pdf, ...?
+#   - gemini + daemon
+#   - gopher + daemon
+#   - finger + daemon
+#   - deploy with rsync
+#   - if available, other header for pages/posts than index
+#   Next, make it correct:
+#   --> functions for header, footer, body, nav, list, rss
+#   --> clean up code, m
+#   --> Next, make it presentable, documented
+#   Then, make it fast
+#   ==> DONE ;-)
+
+
 src := source/data
 dst := build
 
@@ -43,6 +61,15 @@ gmitheme := $(shell find source/theme -name "*.gmi")
 
 gmiindex := $(dst)/gemini/index.gmi
 
+gophermappages := $(patsubst %.md,%.gophermap,\
+				$(patsubst source/data/%,build/.gophershadow/%,\
+					$(mdfiles)))
+
+gophermaptheme := $(shell find source/theme -name "*.gophermap")
+
+gophermapindex := $(dst)/gopher/gophermap
+
+
 
 # -- Tools
 
@@ -70,7 +97,8 @@ jpgsourceimages := $(shell find $(src) -name "*.jpg")
 jpgconvertedimages := $(patsubst $(src)/%,$(dst)/images/%,$(jpgsourceimages))
 jpgtargetimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(jpgconvertedimages))
 htmljpgimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(jpgconvertedimages))
-
+geminipgimages := $(patsubst $(dst)/images/%,$(dst)/gemini/%,$(jpgconvertedimages))
+gopherjpgimages := $(patsubst $(dst)/images/%,$(dst)/gopher/%,$(jpgconvertedimages))
 
 $(dst)/images/%.jpg: source/data/%.jpg
 	@$(call img,$(convertjpg))
@@ -82,6 +110,8 @@ gifsourceimages := $(shell find $(src) -name "*.gif")
 gifconvertedimages := $(patsubst $(src)/%,$(dst)/images/%,$(gifsourceimages))
 giftargetimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(gifconvertedimages))
 htmlgifimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(gifconvertedimages))
+geminigifimages := $(patsubst $(dst)/images/%,$(dst)/gemini/%,$(gifconvertedimages))
+gophergifimages := $(patsubst $(dst)/images/%,$(dst)/gopher/%,$(gifconvertedimages))
 
 $(dst)/images/%.gif: source/data/%.gif
 	@$(call img,$(convertflags))
@@ -92,6 +122,8 @@ pngsourceimages := $(shell find $(src) -name "*.png")
 pngconvertedimages := $(patsubst $(src)/%,$(dst)/images/%,$(pngsourceimages))
 pngtargetimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(pngconvertedimages))
 htmlpngimages := $(patsubst $(dst)/images/%,$(dst)/html/%,$(pngconvertedimages))
+geminipngimages := $(patsubst $(dst)/images/%,$(dst)/gemini/%,$(pngconvertedimages))
+gopherpngimages := $(patsubst $(dst)/images/%,$(dst)/gopher/%,$(pngconvertedimages))
 
 $(dst)/images/%.png: source/data/%.png
 	@$(call img,$(convertflags))
@@ -100,39 +132,32 @@ $(dst)/images/%.png: source/data/%.png
 
 targetimages := $(pngtargetimages) $(giftargetimages) $(jpgtargetimages)
 htmlimages := $(htmlpngimages) $(htmlgifimages) $(htmljpgimages)
+geminiimages := $(geminipngimages) $(geminigifimages) $(geminijpgimages)
+gophermapimages := $(gopherpngimages) $(gophergifimages) $(gopherjpgimages)
 
-html := $(htmlindex) $(htmlpages) $(htmltheme) $(htmlimages)
-gmi := $(gmiindex) $(gmipages) $(gmitheme) $(gmiimages)
+html := $(htmlindex) $(htmlpages) $(htmltheme) $(htmlimages) $(targetimages)
+gmi := $(gmiindex) $(gmipages) $(gmitheme) $(gmiimages) $(targetimages)
+gophermap := $(gophermapindex) $(gophermappages) $(gophermaptheme) $(gophermapimages) $(targetimages)
 
 debug:
-	@echo "HTML theme"
-	@echo $(htmltheme) | tr ' ' '\n'
+	@echo "debug"
+	@echo "-----"
+	@echo "html"
+	@echo $(htmlimages) | tr ' ' '\n' | head
+	@echo "gopher"
+	@echo $(gophermapimages) | tr ' ' '\n' | head
 
 help:
 	$(info blarg start|help)
 
-build: build_html build_gmi
+build: build_html build_gmi build_gopher
 
 build_html: $(html)
 
 build_gmi: $(gmi)
 
+build_gopher: $(gophermap)
 
-# TODO:
-#	First, make it work:
-#   - images (jpg -> dither, png|gif -> BW
-#   	-> convert once, copy over to html/gopher/gemini folder
-#   - other files copied as is (allowed: pdf, ...?
-#   - gemini + daemon
-#   - gopher + daemon
-#   - finger + daemon
-#   - deploy with rsync
-#   Next, make it correct:
-#   --> functions for header, footer, body, nav, list, rss
-#   --> clean up code, m
-#   --> Next, make it presentable, documented
-#   Then, make it fast
-#   ==> DONE ;-)
 
 # -- Functions
 
@@ -210,7 +235,7 @@ define mdtogmi
 		    refcnt=0; \
 		    preformat=0; \
 		}; \
-		/^```/ { preformat=!preformat } \
+		/^```/ { preformat=!preformat }; \
 		{ \
 		    if (preformat) { \
 		        print $$0; \
@@ -235,7 +260,6 @@ define mdtogmi
 		        print ""; \
 		        print "# Table of refs:"; \
 		        print ""; \
-		        \
 		        for (x=1; x <= refcnt; x++) \
 		            print refs[x]; \
 		    } \
@@ -284,8 +308,8 @@ build/gemini/%.gmi: source/data/%.md
 	@echo $*.gmi
 	@mkdir -p $(@D)
 	@$(call gmiheaderfn) > $@
-	@$(call gmibodyfn) >> $@
-	$(call gmifooterfn) >> $@
+	$(call gmibodyfn) >> $@
+	@$(call gmifooterfn) >> $@
 
 build/gemini/index.gmi: $(gmipages) $(gmitheme)
 	@echo $(@F)
@@ -293,6 +317,144 @@ build/gemini/index.gmi: $(gmipages) $(gmitheme)
 	@$(call gmiheaderfn) > $@
 	@$(call gmitocfn,$^,post) >> $@
 	$(call gmifooterfn) >> $@
+
+$(dst)/gemini/%.jpg: build/images/%.jpg
+	@$(call copy)
+
+$(dst)/gemini/%.gif: build/images/%.gif
+	@$(call copy)
+
+$(dst)/gemini/%.png: build/images/%.png
+	@$(call copy)
+
+# images + other files
+
+# -- Gopher
+
+define mdtogophermap
+	gawk \
+		' \
+		BEGIN { \
+		    refcnt=1; \
+		    preformat=0; \
+		}; \
+		/^```/ { \
+		    preformat=!preformat; \
+		    sub(/^```/, ""); \
+		}; \
+		{ \
+		    if (preformat) { \
+		        sub(/^\s+/, "  "); \
+		        print $$0; \
+		        next; \
+		    }; \
+		    sub(/^\s+/, ""); \
+		    sub(/\t/, "  "); \
+		 	while(match($$0, /!\[[^\]]*\]\([^\)]*\)/)){ \
+		 		split(substr($$0, RSTART, RLENGTH), a, /(!\[)|\)|(\]\()/); \
+		        if (a[3]~/\.gif$$/) { \
+		 		    sub(/!\[[^\]]*\]\([^\)]+\)/, "g"a[2]"\t"a[3]); \
+		        } else { \
+		 		    sub(/!\[[^\]]*\]\([^\)]+\)/, "I"a[2]"\t"a[3]); \
+		        } \
+		 	}; \
+		    while(match($$0, /[^!]?\[[^\]]*\]\([^\)]*\)/)) { \
+				split(substr($$0, RSTART, RLENGTH), a, /[\[\)]|(\]\()/); \
+		        if (a[3]~"^http|mailto") { \
+		            refs[refcnt]="h[ref#"refcnt"] "a[2]"\tURL:"a[3]; \
+		        } else { \
+		            refs[refcnt]="1[ref#"refcnt"] "a[2]"\t"a[3]; \
+		        } \
+				sub(/\[[^\]]*\]\([^\)]+\)/, a[2]" (ref#"refcnt++")"); \
+		    }; \
+		    $$0 = gensub(/^#+\s*(.*)$$/, "// \\1 //", "g"); \
+		    $$0 = gensub(/\*+([^\*]+)\*+/, "\\1", "g"); \
+		    partcnt=split($$0,parts,/\s+/); \
+		     l=0; \
+		     for(x=1;x<=partcnt;x++) { \
+		         l=l+length(parts[x])+1 \
+		         if (l>65) { \
+		             printf "\n"; \
+		             l=0; \
+		         }; \
+		         printf "%s ",parts[x] \
+		     }; \
+		     print ""; \
+		}; \
+		END { \
+		    if (refcnt>0) { \
+		        print ""; \
+		        print "// Table of refs //"; \
+		        print ""; \
+		        for (x=1; x <= refcnt; x++) print refs[x]; \
+		    }; \
+		} \
+		' $(1)
+endef
+
+define gophermapheaderfn
+	set -a \
+		&& source "source/data/meta" \
+		&& export SITE_NAV=$$($(call gophermaptocfn,$(gophermappages),page)) \
+		&& cat source/theme/header.gophermap \
+			| envsubst $(ALLOWED_PARAMS)
+endef
+
+define gophermaptocfn
+	echo $(1) \
+		| sed -e 's| |\n|g' \
+		| sed -e 's|^build/gopher||' \
+		| grep '^/$(2)' \
+		| sort -r \
+		| while read $(2); do \
+			set -a; \
+			source "source/data/$$(dirname $$$(2))/meta"; \
+			cat source/theme/index.$(2).gophermap \
+				| LINK=$$(dirname $$$(2))/ envsubst $(ALLOWED_PARAMS); \
+		  done \
+		| envsubst $(ALLOWED_PARAMS)
+endef
+
+define gophermapbodyfn
+	set -a \
+		&& source "$(<D)/meta" \
+		&& $(call mdtogophermap,$<) \
+			| envsubst $(ALLOWED_PARAMS)
+endef
+
+define gophermapfooterfn
+	set -a \
+		&& source "source/data/meta" \
+		&& cat source/theme/footer.gophermap \
+			| envsubst $(ALLOWED_PARAMS)
+endef
+
+build/.gophershadow/%.gophermap: source/data/%.md 
+	@echo $*.gophermap
+	@mkdir -p $(@D)
+	@#$(call gophermapheaderfn) > $@
+	@#$(call gophermapbodyfn) >> $@
+	@$(call gophermapbodyfn)
+	@#$(call gophermapfooterfn) >> $@
+	@mkdir -p build/gopher/$(dir $*)
+	@cp -a $@ build/gopher/$(dir $*)/gophermap
+
+build/gopher/gophermap: $(gophermappages) $(gophermaptheme)
+	@echo $(@F)
+	@mkdir -p $(@D)
+	@$(call gophermapheaderfn) > $@
+	@$(call gophermaptocfn,$^,post) >> $@
+	@$(call gophermapfooterfn) >> $@
+
+$(dst)/gopher/%.jpg: build/images/%.jpg
+	@$(call copy)
+
+$(dst)/gopher/%.gif: build/images/%.gif
+	@$(call copy)
+
+$(dst)/gopher/%.png: build/images/%.png
+	@$(call copy)
+
 
 # -- Tools
 
@@ -304,6 +466,9 @@ clean_html:
 
 clean_gmi:
 	@rm -rf build/gemini
+
+clean_gopher:
+	@rm -rf build/gopher build/.gophershadow
 
 serve:
 	@echo "http://127.0.0.1:8888"
