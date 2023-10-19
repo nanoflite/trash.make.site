@@ -308,7 +308,7 @@ build/gemini/%.gmi: source/data/%.md
 	@echo $*.gmi
 	@mkdir -p $(@D)
 	@$(call gmiheaderfn) > $@
-	$(call gmibodyfn) >> $@
+	@$(call gmibodyfn) >> $@
 	@$(call gmifooterfn) >> $@
 
 build/gemini/index.gmi: $(gmipages) $(gmitheme)
@@ -316,7 +316,7 @@ build/gemini/index.gmi: $(gmipages) $(gmitheme)
 	@mkdir -p $(@D)
 	@$(call gmiheaderfn) > $@
 	@$(call gmitocfn,$^,post) >> $@
-	$(call gmifooterfn) >> $@
+	@$(call gmifooterfn) >> $@
 
 $(dst)/gemini/%.jpg: build/images/%.jpg
 	@$(call copy)
@@ -372,7 +372,7 @@ define mdtogophermap
 		    partcnt=split($$0,parts,/\s+/); \
 		    l=0; \
 		    for(x=1;x<=partcnt;x++) { \
-		         l=l+length(parts[x])+1 \
+		         l=l+length(parts[x])+1; \
 		         if (l>65) { \
 		             printf "\n"; \
 		             l=0; \
@@ -388,7 +388,7 @@ define mdtogophermap
 		        print ""; \
 		        for (x=1; x <= refcnt; x++) print refs[x]; \
 		    }; \
-#		} \
+		} \
 		' $(1)
 endef
 
@@ -432,10 +432,10 @@ endef
 build/.gophershadow/%.gophermap: source/data/%.md 
 	@echo $*.gophermap
 	@mkdir -p $(@D)
-	@#$(call gophermapheaderfn) > $@
-	@#$(call gophermapbodyfn) >> $@
-	@$(call gophermapbodyfn)
-	@#$(call gophermapfooterfn) >> $@
+	@$(call gophermapheaderfn) > $@
+	@$(call gophermapbodyfn) >> $@
+	@$(call gophermapbodyfn) >> $@
+	@$(call gophermapfooterfn) >> $@
 	@mkdir -p build/gopher/$(dir $*)
 	@cp -a $@ build/gopher/$(dir $*)/gophermap
 
