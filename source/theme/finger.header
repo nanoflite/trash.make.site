@@ -1,0 +1,10 @@
+#!/usr/pkg/bin/bash
+
+user=$4
+
+if [[ $user != 'johan' ]]; then
+        echo "bad bad bad"
+        exit 0
+fi
+
+cat <<INFO
