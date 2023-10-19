@@ -370,14 +370,14 @@ define mdtogophermap
 		    $$0 = gensub(/^#+\s*(.*)$$/, "// \\1 //", "g"); \
 		    $$0 = gensub(/\*+([^\*]+)\*+/, "\\1", "g"); \
 		    partcnt=split($$0,parts,/\s+/); \
-		     l=0; \
-		     for(x=1;x<=partcnt;x++) { \
+		    l=0; \
+		    for(x=1;x<=partcnt;x++) { \
 		         l=l+length(parts[x])+1 \
 		         if (l>65) { \
 		             printf "\n"; \
 		             l=0; \
 		         }; \
-		         printf "%s ",parts[x] \
+		         printf "%s ",parts[x]; \
 		     }; \
 		     print ""; \
 		}; \
@@ -388,7 +388,7 @@ define mdtogophermap
 		        print ""; \
 		        for (x=1; x <= refcnt; x++) print refs[x]; \
 		    }; \
-		} \
+#		} \
 		' $(1)
 endef
 
