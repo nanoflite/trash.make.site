@@ -2,21 +2,21 @@
 
 # TODO:
 #	First, make it work:
-#   - images (jpg -> dither, png|gif -> BW
+#   - x images (jpg -> dither, png|gif -> BW
 #   	-> convert once, copy over to html/gopher/gemini folder
 #   - other files copied as is (allowed: pdf, ...?
-#   - gemini + daemon
-#   - gopher + daemon
-#   - finger + daemon
+#   - x gemini + daemon
+#   - x gopher + daemon
+#   - x finger + daemon
+#   - x rss
 #   - deploy with rsync
-#   - if available, other header for pages/posts than index
+#   - x if available, other header for pages/posts than index
 #   Next, make it correct:
-#   --> functions for header, footer, body, nav, list, rss
-#   --> clean up code, m
+#   --> x functions for header, footer, body, nav, list, rss
+#   --> clean up code
 #   --> Next, make it presentable, documented
-#   Then, make it fast
+#   x Then, make it fast
 #   ==> DONE ;-)
-
 
 src := source/data
 dst := build
@@ -35,7 +35,7 @@ convertjpg := $(convertflags) -ordered-dither $(ditherflag)
 .PHONY: debug help clean serve
 
 ALLOWED_PARAMS := '$$SITE_TITLE $$SITE_DESCRIPTION $$SITE_IMAGE $$SITE_NAV \
-	$$SITE_URL $$SITE_COPYRIGHT $$SITE_TTL $$TITLE $$DATE $$IMAGE $$LINK'
+	$$SITE_URL $$SITE_COPYRIGHT $$SITE_TTL $$SITE_LASTBUILD $$TITLE $$DESCRIPTION $$DATE $$IMAGE $$LINK'
 
 mdfiles := $(shell find source/data -name \*.md)
 
@@ -52,6 +52,8 @@ htmltheme := $(shell find source/theme -name "*.html") \
 			  		$(shell find source/theme/assets -type f))
 
 htmlindex := $(dst)/html/index.html
+
+htmlrss := $(dst)/html/index.xml
 
 gmipages := $(patsubst %.md,%.gmi,\
 				$(patsubst source/data/%,build/gemini/%,\
@@ -135,9 +137,12 @@ htmlimages := $(htmlpngimages) $(htmlgifimages) $(htmljpgimages)
 geminiimages := $(geminipngimages) $(geminigifimages) $(geminijpgimages)
 gophermapimages := $(gopherpngimages) $(gophergifimages) $(gopherjpgimages)
 
-html := $(htmlindex) $(htmlpages) $(htmltheme) $(htmlimages) $(targetimages)
+html := $(htmlindex) $(htmlrss) $(htmlpages) $(htmltheme) $(htmlimages) $(targetimages)
 gmi := $(gmiindex) $(gmipages) $(gmitheme) $(gmiimages) $(targetimages)
 gophermap := $(gophermapindex) $(gophermappages) $(gophermaptheme) $(gophermapimages) $(targetimages)
+
+
+finger := $(dst)/finger/info
 
 debug:
 	@echo "debug"
@@ -150,13 +155,15 @@ debug:
 help:
 	$(info blarg start|help)
 
-build: build_html build_gmi build_gopher
+build: build_html build_gmi build_gopher build_finger
 
 build_html: $(html)
 
 build_gmi: $(gmi)
 
 build_gopher: $(gophermap)
+
+build_finger: $(finger)
 
 
 # -- Functions
@@ -200,6 +207,39 @@ define htmlfooterfn
 			| envsubst $(ALLOWED_PARAMS)
 endef
 
+define xmlheaderfn
+	set -a \
+		&& source "source/data/meta" \
+		&& cat source/theme/header.xml \
+			| SITE_LASTBUILD=$$(date -R) envsubst $(ALLOWED_PARAMS)
+endef
+
+define xmltocfn
+	echo $(1) \
+		| sed -e 's| |\n|g' \
+		| sed -e 's|^build/html||' \
+		| sed -e 's|\.html$$|.md|' \
+		| grep '^/$(2)' \
+		| sort -r \
+		| while read $(2); do \
+			set -a; \
+			source "source/data/$$(dirname $$$(2))/meta"; \
+			cat source/theme/index.xml \
+				| \
+					LINK=$$(dirname $$$(2))/ \
+					DESCRIPTION=$$(cat source/data/$$$(2) | head -1 | sed -r 's/([.*\?]|[.*\.]|[.*!]).*/\1/') \
+				envsubst $(ALLOWED_PARAMS); \
+		  done \
+		| envsubst $(ALLOWED_PARAMS)
+endef
+
+define xmlfooterfn
+	set -a \
+		&& source "source/data/meta" \
+		&& cat source/theme/footer.xml \
+			| envsubst $(ALLOWED_PARAMS)
+endef
+
 build/html/%.html: source/data/%.md 
 	@echo $*.html
 	@mkdir -p $(@D)
@@ -213,6 +253,13 @@ build/html/index.html: $(htmlpages) $(htmltheme)
 	@$(call htmlheaderfn) > $@
 	@$(call htmltocfn,$^,post) >> $@
 	@$(call htmlfooterfn) >> $@
+
+build/html/index.xml: $(htmlpages) $(htmltheme)
+	@echo $(@F)
+	@mkdir -p $(@D)
+	@$(call xmlheaderfn) > $@
+	$(call xmltocfn,$^,post) >> $@
+	@$(call xmlfooterfn) >> $@
 
 build/html/assets/%: source/theme/assets/%
 	$(call copy)
@@ -455,10 +502,27 @@ $(dst)/gopher/%.gif: build/images/%.gif
 $(dst)/gopher/%.png: build/images/%.png
 	@$(call copy)
 
+# -- Finger
+
+define expand
+	set -a \
+		&& source "$2" \
+		&& cat $1 \
+			| envsubst $(ALLOWED_PARAMS)
+endef
+
+
+$(dst)/finger/info: source/data/finger.txt source/theme/finger.header source/theme/finger.footer
+	@echo $(@F)
+	@mkdir -p $(@D)
+	@$(call expand,source/theme/finger.header,source/data/meta) > $@
+	@$(call expand,$<,source/data/meta) >> $@
+	@$(call expand,source/theme/finger.footer,source/data/meta) >> $@
+
 
 # -- Tools
 
-clean: clean_html clean_gmi
+clean: clean_html clean_gmi clean_gopher clean_finger
 	@rm -rf build
 
 clean_html:
@@ -469,6 +533,9 @@ clean_gmi:
 
 clean_gopher:
 	@rm -rf build/gopher build/.gophershadow
+
+clean_finger:
+	@rm -rf build/finger
 
 serve:
 	@echo "http://127.0.0.1:8888"

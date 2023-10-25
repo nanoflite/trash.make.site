@@ -7,4 +7,4 @@ if [[ $user != 'johan' ]]; then
         exit 0
 fi
 
-cat <<INFO
+cat <<"INFO"

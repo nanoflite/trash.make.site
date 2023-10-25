@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+ <title>${SITE_TITLE}</title>
+ <description>${SITE_DESCRIPTION}</description>
+ <link>${SITE_URL}</link>
+ <copyright>${SITE_COPYRIGHT}</copyright>
+ <lastBuildDate>${SITE_LASTBUILD}</lastBuildDate>
+ <pubDate>${SITE_PUBDATE}</pubDate>
+ <ttl>${SITE_TTL}</ttl>
