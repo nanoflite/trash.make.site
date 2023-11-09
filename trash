@@ -1,22 +1,10 @@
 #!/usr/bin/env make -f
 
-# TODO:
-#	First, make it work:
-#   - x images (jpg -> dither, png|gif -> BW
-#   	-> convert once, copy over to html/gopher/gemini folder
-#   - other files copied as is (allowed: pdf, ...?
-#   - x gemini + daemon
-#   - x gopher + daemon
-#   - x finger + daemon
-#   - x rss
-#   - deploy with rsync
-#   - x if available, other header for pages/posts than index
-#   Next, make it correct:
-#   --> x functions for header, footer, body, nav, list, rss
-#   --> clean up code
-#   --> Next, make it presentable, documented
-#   x Then, make it fast
-#   ==> DONE ;-)
+## Welcome to...
+## ┏┓┓┳━┓┳━┓┓━┓┳ ┳ ┏┏┓┳━┓┳┏ ┳━┓ ┓━┓o┏┓┓┳━┓
+##  ┃ ┃┳┛┃━┫┗━┓┃━┫ ┃┃┃┃━┫┣┻┓┣━  ┗━┓┃ ┃ ┣━ 
+##  ┇ ┇┗┛┛ ┇━━┛┇ ┻o┛ ┇┛ ┇┇ ┛┻━┛o━━┛┇ ┇ ┻━┛
+## (c) 2020-2023 JVdB
 
 src := source/data
 dst := build
@@ -32,10 +20,15 @@ convertjpg := $(convertflags) -ordered-dither $(ditherflag)
 
 .ONESHELL:
 
-.PHONY: debug help clean serve
+.PHONY: debug help clean serve docs
+
+
+docs:
+	@cat trash | sed -ne '/^##/ s/^##//p'
 
 ALLOWED_PARAMS := '$$SITE_TITLE $$SITE_DESCRIPTION $$SITE_IMAGE $$SITE_NAV \
-	$$SITE_URL $$SITE_COPYRIGHT $$SITE_TTL $$SITE_LASTBUILD $$TITLE $$DESCRIPTION $$DATE $$IMAGE $$LINK'
+	$$SITE_URL $$SITE_COPYRIGHT $$SITE_TTL $$SITE_LASTBUILD $$TITLE $$DESCRIPTION $$DATE $$IMAGE $$LINK \
+	$$COVER_IMAGE'
 
 mdfiles := $(shell find source/data -name \*.md)
 
@@ -92,7 +85,7 @@ endef
 # -- Handle JPG images
 
 
-## candidate for meta programming
+# candidate for meta programming
 # $(eval $(call handleimages,jpg))
 # --> above call generates below + gemini and gopher images)
 jpgsourceimages := $(shell find $(src) -name "*.jpg") 
@@ -130,6 +123,29 @@ gopherpngimages := $(patsubst $(dst)/images/%,$(dst)/gopher/%,$(pngconvertedimag
 $(dst)/images/%.png: source/data/%.png
 	@$(call img,$(convertflags))
 
+# -- Handle other files
+
+otherfiles := $(shell find $(src) \
+			  			-not -name "*.md" \
+						-not -name "*.png" \
+						-not -name "*.jpg" \
+						-not -name "*.gif" \
+						-not -name "finger.txt" \
+						-not -name "meta" \
+						-not -name ".DS_Store" \
+						-type f)
+
+otherfileshtml := $(patsubst $(src)/%,$(dst)/html/%,$(otherfiles))
+otherfilesgopher := $(patsubst $(src)/%,$(dst)/gopher/%,$(otherfiles))
+otherfilesgemini := $(patsubst $(src)/%,$(dst)/gemini/%,$(otherfiles))
+targetotherfiles := $(otherfileshtml) $(otherfilesgemini) $(otherfilesgopher)
+
+
+others: $(targetotherfiles)
+
+$(targetotherfiles): $(otherfiles)
+	@$(call copy)
+
 # -- Main
 
 targetimages := $(pngtargetimages) $(giftargetimages) $(jpgtargetimages)
@@ -137,20 +153,25 @@ htmlimages := $(htmlpngimages) $(htmlgifimages) $(htmljpgimages)
 geminiimages := $(geminipngimages) $(geminigifimages) $(geminijpgimages)
 gophermapimages := $(gopherpngimages) $(gophergifimages) $(gopherjpgimages)
 
-html := $(htmlindex) $(htmlrss) $(htmlpages) $(htmltheme) $(htmlimages) $(targetimages)
-gmi := $(gmiindex) $(gmipages) $(gmitheme) $(gmiimages) $(targetimages)
-gophermap := $(gophermapindex) $(gophermappages) $(gophermaptheme) $(gophermapimages) $(targetimages)
+html := $(htmlindex) $(htmlrss) $(htmlpages) $(htmltheme) $(htmlimages) $(targetimages) $(otherfileshtml)
+gmi := $(gmiindex) $(gmipages) $(gmitheme) $(gmiimages) $(targetimages) $(otherfilesgemini)
+gophermap := $(gophermapindex) $(gophermappages) $(gophermaptheme) $(gophermapimages) $(targetimages) $(otherfilesgopher)
 
 
 finger := $(dst)/finger/info
 
+
+define showvarfn
+	echo $(1)
+	echo ${$(1)} | tr ' ' '\n' | sed 's/^/  * /'
+endef
+
 debug:
 	@echo "debug"
 	@echo "-----"
-	@echo "html"
-	@echo $(htmlimages) | tr ' ' '\n' | head
-	@echo "gopher"
-	@echo $(gophermapimages) | tr ' ' '\n' | head
+	@$(call showvarfn,otherfiles)
+	@$(call showvarfn,otherfilescopy)
+	@$(call showvarfn,targetotherfiles)
 
 help:
 	$(info blarg start|help)
@@ -174,6 +195,7 @@ define htmlheaderfn
 	set -a \
 		&& source "source/data/meta" \
 		&& export SITE_NAV=$$($(call htmltocfn,$(htmlpages),page)) \
+		&& export COVER_IMAGE=$$($(call defaultfilefn,$(1),images/cover.jpg,/images/cover.jpg)) \
 		&& cat source/theme/header.html \
 			| envsubst $(ALLOWED_PARAMS)
 endef
@@ -205,6 +227,10 @@ define htmlfooterfn
 		&& source "source/data/meta" \
 		&& cat source/theme/footer.html \
 			| envsubst $(ALLOWED_PARAMS)
+endef
+
+define defaultfilefn
+	[ -f $(1)/$(2) ] && echo $(2) || echo $(3)
 endef
 
 define xmlheaderfn
@@ -243,7 +269,7 @@ endef
 build/html/%.html: source/data/%.md 
 	@echo $*.html
 	@mkdir -p $(@D)
-	@$(call htmlheaderfn) > $@
+	$(call htmlheaderfn,$(<D)) > $@
 	@$(call htmlbodyfn) >> $@
 	@$(call htmlfooterfn) >> $@
 
@@ -251,7 +277,9 @@ build/html/index.html: $(htmlpages) $(htmltheme)
 	@echo $(@F)
 	@mkdir -p $(@D)
 	@$(call htmlheaderfn) > $@
+	@echo "<ul>" >> $@
 	@$(call htmltocfn,$^,post) >> $@
+	@echo "</ul>" >> $@
 	@$(call htmlfooterfn) >> $@
 
 build/html/index.xml: $(htmlpages) $(htmltheme)
@@ -271,6 +299,9 @@ $(dst)/html/%.gif: build/images/%.gif
 	@$(call copy)
 
 $(dst)/html/%.png: build/images/%.png
+	@$(call copy)
+
+$(dst)/html/%.pdf: source/data/%.pdf
 	@$(call copy)
 
 # -- Gemini
@@ -518,6 +549,25 @@ $(dst)/finger/info: source/data/finger.txt source/theme/finger.header source/the
 	@$(call expand,source/theme/finger.header,source/data/meta) > $@
 	@$(call expand,$<,source/data/meta) >> $@
 	@$(call expand,source/theme/finger.footer,source/data/meta) >> $@
+
+
+# -- Deploy
+
+deploy_www:
+	@echo "Copying www site to server..."
+	@rsync -avzhe ssh --progress ./build/html/ ${SERVER}:${DATA_PATH}/www --delete
+
+deploy_gopher:
+	@echo "Copying gopher site to server..."
+	@rsync -avzhe ssh --progress ./build/gopher/ ${SERVER}:${DATA_PATH}/gopher --delete
+
+deploy_gemini:
+	@echo "Copying gemini site to server..."
+	@rsync -avzhe ssh --progress ./build/gemini/ ${SERVER}:${DATA_PATH}/gemini --delete
+
+deploy_finger:
+	@echo "Copying finger data to server..."
+	@rsync -avzhe ssh --progress ./build/finger/ ${SERVER}:${DATA_PATH}/finger --delete
 
 
 # -- Tools
