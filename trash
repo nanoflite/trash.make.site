@@ -553,6 +553,8 @@ $(dst)/finger/info: source/data/finger.txt source/theme/finger.header source/the
 
 # -- Deploy
 
+deploy: deploy_www deploy_gopher deploy_gemini deploy_finger
+
 deploy_www:
 	@echo "Copying www site to server..."
 	@rsync -avzhe ssh --progress ./build/html/ ${SERVER}:${DATA_PATH}/www --delete
