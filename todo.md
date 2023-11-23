@@ -21,4 +21,5 @@ Then, make it fast.
   * [x] functions for header, footer, body, nav, list, rss
   * [ ] clean up code
   * [ ] make smaller, i.e. apply some meta programming
-  * [ ] init target
+  * [ ] init target (aka, set up blog skeleton)
+  * [ ] make finger script exe
