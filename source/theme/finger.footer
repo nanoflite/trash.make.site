@@ -3,4 +3,6 @@
 
 ${SITE_COPYRIGHT}
 
+Last update: ${SITE_LASTBUILD}
+
 INFO
