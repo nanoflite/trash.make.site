@@ -1,8 +1,9 @@
 MAKE SITE TRASH - Site generator  I use
-to power my blog. Minimalistic bad code
-in Python, use at own  risk, guaranteed
-no cookies, no  javascript, no tracking
-, no tracing, no FUN.  Mostly text only
-and dithered images, exceptions allowed
+to power my blog. Makefile powered with
+good old awk and  sed, use at own risk,
+guaranteed no cookies, no   javascript,
+no tracking, no tracing, no FUN. Mostly
+text only and dithered images,with some
+exceptions allowed to keep up apearence
 _______________________________________
 _____M_A_K_E___S_I_T_E___T_R_A_S_H_____
