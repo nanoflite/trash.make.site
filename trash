@@ -17,11 +17,14 @@ convertflags := -set colorspace Gray -separate -average \
 
 convertjpg := $(convertflags) -ordered-dither $(ditherflag)
 
+SERVER="johan@smoll.home"
+DATA_PATH="/mnt/data"
 
 .ONESHELL:
 
-.PHONY: debug help clean serve docs
+.PHONY: debug help clean serve docs build deploy all
 
+all: clean build deploy
 
 docs:
 	@cat trash | sed -ne '/^##/ s/^##//p'
@@ -539,7 +542,7 @@ define expand
 	set -a \
 		&& source "$2" \
 		&& cat $1 \
-			| envsubst $(ALLOWED_PARAMS)
+			| SITE_LASTBUILD=$$(date -R) envsubst $(ALLOWED_PARAMS)
 endef
 
 
@@ -549,6 +552,7 @@ $(dst)/finger/info: source/data/finger.txt source/theme/finger.header source/the
 	@$(call expand,source/theme/finger.header,source/data/meta) > $@
 	@$(call expand,$<,source/data/meta) >> $@
 	@$(call expand,source/theme/finger.footer,source/data/meta) >> $@
+	@chmod +x $@
 
 
 # -- Deploy
