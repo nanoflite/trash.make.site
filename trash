@@ -157,8 +157,8 @@ geminiimages := $(geminipngimages) $(geminigifimages) $(geminijpgimages)
 gophermapimages := $(gopherpngimages) $(gophergifimages) $(gopherjpgimages)
 
 html := $(htmlindex) $(htmlrss) $(htmlpages) $(htmltheme) $(htmlimages) $(targetimages) $(otherfileshtml)
-gmi := $(gmiindex) $(gmipages) $(gmitheme) $(gmiimages) $(targetimages) $(otherfilesgemini)
-gophermap := $(gophermapindex) $(gophermappages) $(gophermaptheme) $(gophermapimages) $(targetimages) $(otherfilesgopher)
+gmi := $(gmiindex) $(gmipages) $(gmitheme) $(gmiimages) $(otherfilesgemini)
+gophermap := $(gophermapindex) $(gophermappages) $(gophermaptheme) $(gophermapimages) $(otherfilesgopher)
 
 
 finger := $(dst)/finger/info
@@ -477,14 +477,14 @@ define gophermapheaderfn
 	set -a \
 		&& source "source/data/meta" \
 		&& export SITE_NAV=$$($(call gophermaptocfn,$(gophermappages),page)) \
-		&& cat source/theme/header.gophermap \
+		&& cat source/theme/header$(1).gophermap \
 			| envsubst $(ALLOWED_PARAMS)
 endef
 
 define gophermaptocfn
 	echo $(1) \
 		| sed -e 's| |\n|g' \
-		| sed -e 's|^build/gopher||' \
+		| sed -e 's|^build/.gophershadow||' \
 		| grep '^/$(2)' \
 		| sort -r \
 		| while read $(2); do \
@@ -506,15 +506,14 @@ endef
 define gophermapfooterfn
 	set -a \
 		&& source "source/data/meta" \
-		&& cat source/theme/footer.gophermap \
+		&& cat source/theme/footer$(1).gophermap \
 			| envsubst $(ALLOWED_PARAMS)
 endef
 
 build/.gophershadow/%.gophermap: source/data/%.md 
 	@echo $*.gophermap
 	@mkdir -p $(@D)
-	@$(call gophermapheaderfn) > $@
-	@$(call gophermapbodyfn) >> $@
+	@$(call gophermapheaderfn,.post) > $@
 	@$(call gophermapbodyfn) >> $@
 	@$(call gophermapfooterfn) >> $@
 	@mkdir -p build/gopher/$(dir $*)

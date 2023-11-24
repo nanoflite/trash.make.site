@@ -22,4 +22,5 @@ Then, make it fast.
   * [ ] clean up code
   * [ ] make smaller, i.e. apply some meta programming
   * [ ] init target (aka, set up blog skeleton)
-  * [ ] make finger script exe
+  * [x] make finger script exe
+  * [x] fix gopher
