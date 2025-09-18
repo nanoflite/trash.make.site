@@ -32,11 +32,11 @@ CC65 is a Small C compiler or the 6502. The 6502 is the CPU found in the C64 and
 
 # The result
 
-![breadbox64_welcome](images/breadbox64_welcome.png "breadbox64_welcome"){: dither="no" }
+![breadbox64_welcome](images/breadbox64_welcome.png "breadbox64_welcome")
 
 The welcome screen, ready to log in!
 
-![breadbox64_main](images/breadbox64_main.png "breadbox64_main"){: dither="no" }
+![breadbox64_main](images/breadbox64_main.png "breadbox64_main")
 
 Twittering from a C64.
 

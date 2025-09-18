@@ -141,11 +141,6 @@ I  have some ideas on the future of my BASIC interpreter. One of the things I'm 
 
 To close, [here's a video of the BASIC-1 in action](https://vimeo.com/518497249).
 
-#### XXX
-
-[Test1](mailto:johan@vdb.xc)
-X[Test2](http://knalpap.com)
-
 ### References
 
   * [My BASIC interpreter on github](https://github.com/nanoflite/basic)
