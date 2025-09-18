@@ -24,3 +24,6 @@ Then, make it fast.
   * [ ] init target (aka, set up blog skeleton)
   * [x] make finger script exe
   * [x] fix gopher
+  * [x] add option to create a link to original color images
+  *     [x] copy over original images
+  *     [x] preprocess md file to add link to original image

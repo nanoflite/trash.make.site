@@ -4,7 +4,7 @@
 ## ┏┓┓┳━┓┳━┓┓━┓┳ ┳ ┏┏┓┳━┓┳┏ ┳━┓ ┓━┓o┏┓┓┳━┓
 ##  ┃ ┃┳┛┃━┫┗━┓┃━┫ ┃┃┃┃━┫┣┻┓┣━  ┗━┓┃ ┃ ┣━ 
 ##  ┇ ┇┗┛┛ ┇━━┛┇ ┻o┛ ┇┛ ┇┇ ┛┻━┛o━━┛┇ ┇ ┻━┛
-## (c) 2020-2023 JVdB
+## (c) 2020-2025 JVdB
 
 src := source/data
 dst := build
@@ -20,9 +20,16 @@ convertjpg := $(convertflags) -ordered-dither $(ditherflag)
 SERVER="johan@smoll.home"
 DATA_PATH="/mnt/data"
 
+# Run all recipe lines in a single shell
 .ONESHELL:
 
-.PHONY: debug help clean serve docs build deploy all
+# Use strict shell flags:
+#  -e  : exit immediately if any command fails
+#  -u  : treat unset variables as errors
+#  -o pipefail : make pipelines fail if any command fails
+.SHELLFLAGS = -eu -o pipefail -c
+
+.PHONY: debug help clean serve docs build deploy all watch
 
 all: clean build deploy
 
@@ -31,13 +38,10 @@ docs:
 
 ALLOWED_PARAMS := '$$SITE_TITLE $$SITE_DESCRIPTION $$SITE_IMAGE $$SITE_NAV \
 	$$SITE_URL $$SITE_COPYRIGHT $$SITE_TTL $$SITE_LASTBUILD $$TITLE $$DESCRIPTION $$DATE $$IMAGE $$LINK \
-	$$COVER_IMAGE'
+	$$COVER_IMAGE $$ORIGINAL_COVER_IMAGE'
 
 mdfiles := $(shell find source/data -name \*.md)
 
-
-# meta:
-# $(call pages,html)
 
 htmlpages := $(patsubst %.md,%.html,\
 				$(patsubst source/data/%,build/html/%,\
@@ -72,15 +76,22 @@ gophermapindex := $(dst)/gopher/gophermap
 # -- Tools
 
 define copy
-	echo "copy $(@F)"
-	mkdir -p $(@D)
-	cp -a $< $@
+	echo "::copy '$(1)' to '$(2)'"
+	mkdir -p $(dir $(2))
+	cp -a -- "$(1)" "$(2)"
+endef
+
+define copy_original
+	$(call copy,$(patsubst build/images/%,source/data/%,$(1)),$(dir $(2))/original/$(notdir $(2)))
 endef
 
 # -- Images
 
+# --> Here, we can copy over the original images as well (name_orig.ext)
+#  This name convention allows us to add a link to the images to the original image
+
 define img
-	echo "img $(@F)"
+	echo "processing image '$(@F)'"
 	mkdir -p $(@D)
 	convert $< $1 $@ 
 endef
@@ -126,28 +137,6 @@ gopherpngimages := $(patsubst $(dst)/images/%,$(dst)/gopher/%,$(pngconvertedimag
 $(dst)/images/%.png: source/data/%.png
 	@$(call img,$(convertflags))
 
-# -- Handle other files
-
-otherfiles := $(shell find $(src) \
-			  			-not -name "*.md" \
-						-not -name "*.png" \
-						-not -name "*.jpg" \
-						-not -name "*.gif" \
-						-not -name "finger.txt" \
-						-not -name "meta" \
-						-not -name ".DS_Store" \
-						-type f)
-
-otherfileshtml := $(patsubst $(src)/%,$(dst)/html/%,$(otherfiles))
-otherfilesgopher := $(patsubst $(src)/%,$(dst)/gopher/%,$(otherfiles))
-otherfilesgemini := $(patsubst $(src)/%,$(dst)/gemini/%,$(otherfiles))
-targetotherfiles := $(otherfileshtml) $(otherfilesgemini) $(otherfilesgopher)
-
-
-others: $(targetotherfiles)
-
-$(targetotherfiles): $(otherfiles)
-	@$(call copy)
 
 # -- Main
 
@@ -156,7 +145,7 @@ htmlimages := $(htmlpngimages) $(htmlgifimages) $(htmljpgimages)
 geminiimages := $(geminipngimages) $(geminigifimages) $(geminijpgimages)
 gophermapimages := $(gopherpngimages) $(gophergifimages) $(gopherjpgimages)
 
-html := $(htmlindex) $(htmlrss) $(htmlpages) $(htmltheme) $(htmlimages) $(targetimages) $(otherfileshtml)
+html := $(htmlindex) $(htmlrss) $(htmlpages) $(htmltheme) $(htmlimages) $(targetimages)
 gmi := $(gmiindex) $(gmipages) $(gmitheme) $(gmiimages) $(otherfilesgemini)
 gophermap := $(gophermapindex) $(gophermappages) $(gophermaptheme) $(gophermapimages) $(otherfilesgopher)
 
@@ -172,12 +161,9 @@ endef
 debug:
 	@echo "debug"
 	@echo "-----"
-	@$(call showvarfn,otherfiles)
-	@$(call showvarfn,otherfilescopy)
-	@$(call showvarfn,targetotherfiles)
 
 help:
-	$(info blarg start|help)
+	$(info trash debug|help|clean|serve|docs|build|deploy|all|watch)
 
 build: build_html build_gmi build_gopher build_finger
 
@@ -196,9 +182,10 @@ build_finger: $(finger)
 
 define htmlheaderfn
 	set -a \
-		&& source "source/data/meta" \
+		&& source "$(1)/meta" \
 		&& export SITE_NAV=$$($(call htmltocfn,$(htmlpages),page)) \
 		&& export COVER_IMAGE=$$($(call defaultfilefn,$(1),images/cover.jpg,/images/cover.jpg)) \
+		&& export ORIGINAL_COVER_IMAGE=$$($(call defaultfilefn2,$(1),images/cover.jpg,images/original/cover.jpg,/images/original/cover.jpg)) \
 		&& cat source/theme/header.html \
 			| envsubst $(ALLOWED_PARAMS)
 endef
@@ -219,10 +206,9 @@ define htmltocfn
 endef
 
 define htmlbodyfn
-	set -a \
-		&& source "$(<D)/meta" \
-		&& markdown $< \
-			| envsubst $(ALLOWED_PARAMS)
+	set -a
+	source "$(<D)/meta"
+	$(call addoriginalimage,$<) | markdown | envsubst $(ALLOWED_PARAMS)
 endef
 
 define htmlfooterfn
@@ -235,6 +221,11 @@ endef
 define defaultfilefn
 	[ -f $(1)/$(2) ] && echo $(2) || echo $(3)
 endef
+
+define defaultfilefn2
+	[ -f $(1)/$(2) ] && echo $(3) || echo $(4)
+endef
+
 
 define xmlheaderfn
 	set -a \
@@ -269,6 +260,27 @@ define xmlfooterfn
 			| envsubst $(ALLOWED_PARAMS)
 endef
 
+define addoriginalimage
+	gawk '{ \
+		line = $$0; \
+		if (match(line, /!\[([^]]*)]\(([^)]+)\)/, m)) { \
+			alt = m[1]; \
+			path = m[2]; \
+			n = split(path, parts, "/"); \
+			fname = parts[n]; \
+			newfname = "original/" fname; \
+			newpath = ""; \
+			for (i = 1; i < n; i++) { \
+				newpath = newpath parts[i] "/"; \
+			}; \
+			newpath = newpath newfname; \
+			repl = "[![" alt "](" path ")](" newpath ")"; \
+			sub(/!\[[^]]*]\([^)]+\)/, repl, line); \
+		}; \
+		print line \
+	}' $(1)
+endef
+
 build/html/%.html: source/data/%.md 
 	@echo $*.html
 	@mkdir -p $(@D)
@@ -279,7 +291,7 @@ build/html/%.html: source/data/%.md
 build/html/index.html: $(htmlpages) $(htmltheme)
 	@echo $(@F)
 	@mkdir -p $(@D)
-	@$(call htmlheaderfn) > $@
+	@$(call htmlheaderfn,"source/data") > $@
 	@echo "<ul>" >> $@
 	@$(call htmltocfn,$^,post) >> $@
 	@echo "</ul>" >> $@
@@ -293,19 +305,23 @@ build/html/index.xml: $(htmlpages) $(htmltheme)
 	@$(call xmlfooterfn) >> $@
 
 build/html/assets/%: source/theme/assets/%
-	$(call copy)
+	$(call copy,$<,$@)
 
 $(dst)/html/%.jpg: build/images/%.jpg
-	@$(call copy)
+	@$(call copy,$<,$@)
+	@$(call copy_original,$<,$@)
 
 $(dst)/html/%.gif: build/images/%.gif
-	@$(call copy)
+	@$(call copy,$<,$@)
+
+	@$(call copy_original,$<,$@)
 
 $(dst)/html/%.png: build/images/%.png
-	@$(call copy)
+	@$(call copy,$<,$@)
+	@$(call copy_original,$<,$@)
 
 $(dst)/html/%.pdf: source/data/%.pdf
-	@$(call copy)
+	@$(call copy,$<,$@)
 
 # -- Gemini
 
@@ -400,13 +416,13 @@ build/gemini/index.gmi: $(gmipages) $(gmitheme)
 	@$(call gmifooterfn) >> $@
 
 $(dst)/gemini/%.jpg: build/images/%.jpg
-	@$(call copy)
+	@$(call copy,$<,$@)
 
 $(dst)/gemini/%.gif: build/images/%.gif
-	@$(call copy)
+	@$(call copy,$<,$@)
 
 $(dst)/gemini/%.png: build/images/%.png
-	@$(call copy)
+	@$(call copy,$<,$@)
 
 # images + other files
 
@@ -527,13 +543,13 @@ build/gopher/gophermap: $(gophermappages) $(gophermaptheme)
 	@$(call gophermapfooterfn) >> $@
 
 $(dst)/gopher/%.jpg: build/images/%.jpg
-	@$(call copy)
+	@$(call copy,$<,$@)
 
 $(dst)/gopher/%.gif: build/images/%.gif
-	@$(call copy)
+	@$(call copy,$<,$@)
 
 $(dst)/gopher/%.png: build/images/%.png
-	@$(call copy)
+	@$(call copy,$<,$@)
 
 # -- Finger
 
