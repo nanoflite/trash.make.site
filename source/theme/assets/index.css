@@ -31,7 +31,7 @@ body {
 }
 
 .cover-img {
-    /* mix-blend-mode: hard-light; */
+    max-width: 400px; 
 }
 
 .cover-img-no-blend {
